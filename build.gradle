@@ -65,6 +65,7 @@ def pomConfig = {
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            artifact jar
             artifact sourcesJar
             artifact javadocJar
             artifact distZip
@@ -100,7 +101,7 @@ bintray {
     pkg {
         repo = 'maven'
         name = 'SHT21'
-        desc = ''
+        desc = 'Java library for communication with an SHT21 sensor'
         websiteUrl = 'https://github.com/stefanfreitag/SHT21'
         issueTrackerUrl = 'https://github.com/stefanfreitag/SHT21/issues'
         vcsUrl = 'git://github.com/stefanfreitag/SHT21.git'
@@ -108,8 +109,8 @@ bintray {
         labels = ['Java', 'SHT21']
         publicDownloadNumbers = true
 	version {
-            name = '1.0'
-            vcsTag = '1.0'
+        name = project.version
+        vcsTag = project.version
             gpg {
               sign = true
               passphrase = project.hasProperty('gpg_passphrase') ? gpg_passphrase :  ''
