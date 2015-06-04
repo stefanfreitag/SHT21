@@ -17,10 +17,12 @@ public enum Command {
     /**
      * Trigger temperature measurement hold master. Byte code 1110’0011.
      */
+    @SuppressWarnings("unused")
     TRIG_T_MEASUREMENT_HM((byte) 0xe3),
     /**
      * Trigger humidity measurement hold master. Byte code 1110’0101.
      */
+    @SuppressWarnings("unused")
     TRIG_RH_MEASUREMENT_HM((byte) 0xe5),
     /**
      * Trigger temperature measurement no hold master. Byte code 1111’0011.
@@ -33,6 +35,7 @@ public enum Command {
     /**
      * Writing user register. Byte code 1110’0110.
      */
+    @SuppressWarnings("unused")
     USER_REG_W((byte) 0xe6),
     /**
      * Reading user register. Byte code 1110’0111.
@@ -50,6 +53,7 @@ public enum Command {
     private final byte commandByte;
 
     /**
+     * Create a new {@link Command}.
      * @param commandByte Command encoded as byte.
      */
     Command(final byte commandByte) {
