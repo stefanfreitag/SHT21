@@ -17,10 +17,10 @@ plugins {
     id 'pmd'
     id 'maven-publish'
     id 'com.github.kt3k.coveralls' version '2.0.1'
-    id 'com.jfrog.bintray' version '1.0'
+    id 'com.jfrog.bintray' version '1.2'
 }
 
-version = '1.0'
+version = '1.0.0'
 
 repositories {
     mavenCentral()
@@ -188,6 +188,6 @@ jacocoTestReport {
     }
 }
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.2.1'
+    gradleVersion = '2.4'
 }
 
