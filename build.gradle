@@ -174,10 +174,16 @@ tasks.withType(FindBugs) {
 
 pmd {
     ignoreFailures = true
-    reportsDir = file("$project.buildDir/reports/pmd")
     ruleSets = [
             "java-basic",
-            "java-braces"
+            "java-braces",
+            "java-design",
+            "java-finalizers",
+            "java-junit",
+            "java-naming",
+            "java-optimizations",
+            "java-strings",
+            "java-unusedcode"
     ]
 }
 
@@ -188,6 +194,6 @@ jacocoTestReport {
     }
 }
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.4'
+    gradleVersion = '2.8'
 }
 

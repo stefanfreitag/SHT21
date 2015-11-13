@@ -17,7 +17,7 @@ public final class SHT21Demo {
     /**
      * Device address.
      */
-    private static final int address = 0x40;
+    private static final int I2C_ADDRESS = 0x40;
 
     private SHT21 sht21;
 
@@ -30,8 +30,8 @@ public final class SHT21Demo {
      * @param args Arguments passed along at the command line.
      */
     public static void main(final String[] args) {
-        SHT21Demo main = new SHT21Demo();
-        main.doMain(args);
+        final SHT21Demo instance = new SHT21Demo();
+        instance.doMain(args);
         System.exit(0);
     }
 
@@ -44,7 +44,7 @@ public final class SHT21Demo {
         return LogManager.getLogger(SHT21Demo.class.getCanonicalName());
     }
 
-    private void doMain(String[] args) {
+    private void doMain(final String[] args) {
         final CmdLineParser parser = new CmdLineParser(this);
         try {
             parser.parseArgument(args);
@@ -54,7 +54,7 @@ public final class SHT21Demo {
             return;
         }
 
-        this.sht21 = SHT21Impl.create(I2CBus.BUS_1, address);
+        this.sht21 = SHT21Impl.create(I2CBus.BUS_1, I2C_ADDRESS);
 
         while (true) {
             try {
@@ -67,20 +67,20 @@ public final class SHT21Demo {
     }
 
     private void execute() {
-        if (demoType.equalsIgnoreCase("battery")) {
-            EndOfBatteryAlert eobAlert = sht21.getEndOfBatteryAlert();
+        if ("battery".equalsIgnoreCase(demoType)) {
+            final EndOfBatteryAlert eobAlert = sht21.getEndOfBatteryAlert();
             getLogger().info("End of battery alert: " + eobAlert);
-        } else if (demoType.equalsIgnoreCase("humidity")) {
-            Measurement measurement = sht21.measurePoll(MeasureType.HUMIDITY);
+        } else if ("humidity".equalsIgnoreCase(demoType)) {
+            final Measurement measurement = sht21.measurePoll(MeasureType.HUMIDITY);
             getLogger().info("Relative Humidity [%]: " + String.format("%.2f", measurement.getValue()));
-        } else if (demoType.equalsIgnoreCase("resolution")) {
-            Resolution resolution = sht21.getResolution();
+        } else if ("resolution".equalsIgnoreCase(demoType)) {
+            final Resolution resolution = sht21.getResolution();
             getLogger().info("Resolution: " + resolution);
-        } else if (demoType.equalsIgnoreCase("heater")) {
-            HeaterStatus eobAlert = sht21.getHeaterStatus();
+        } else if ("heater".equalsIgnoreCase(demoType)) {
+            final HeaterStatus eobAlert = sht21.getHeaterStatus();
             getLogger().info("Heater status: " + eobAlert);
-        } else if (demoType.equalsIgnoreCase("temperature")) {
-            Measurement measurement = sht21.measurePoll(MeasureType.TEMPERATURE);
+        } else if ("temperature".equalsIgnoreCase(demoType)) {
+            final Measurement measurement = sht21.measurePoll(MeasureType.TEMPERATURE);
             getLogger().info("Measured temperature [deg C]: " + String.format("%.2f", measurement.getValue()));
         }
     }
