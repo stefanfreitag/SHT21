@@ -1,6 +1,6 @@
-package de.freitag.stefan.sht21.model;
+package de.freitag.stefan.sht21;
 
-import de.freitag.stefan.sht21.SHT21;
+import de.freitag.stefan.sht21.model.*;
 
 import java.util.Random;
 
@@ -19,7 +19,7 @@ public final class SHT21DummyImpl implements SHT21 {
      */
     @Override
     public Resolution getResolution() {
-        final int i = Math.abs(RAND.nextInt()) % Resolution.values().length;
+        final int i = RAND.nextInt(Integer.MAX_VALUE) % Resolution.values().length;
         return Resolution.values()[i];
     }
 

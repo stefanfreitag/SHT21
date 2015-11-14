@@ -64,7 +64,7 @@ public final class Measurement {
      * @return The creation {@link Date}.
      */
     public Date getCreatedAt() {
-        return this.createdAt;
+        return new Date(this.createdAt.getTime());
     }
 
 

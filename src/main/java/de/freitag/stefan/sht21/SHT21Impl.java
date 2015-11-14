@@ -172,11 +172,11 @@ public final class SHT21Impl implements SHT21 {
             getLogger().debug("Writing byte " + String.format("0x%02X", Command.USER_REG_R.getCommandByte()) + " to device " + this.device);
             this.device.write(Command.USER_REG_R.getCommandByte());
             delay(100);
-            byte[] bytes = new byte[1];
+            final byte[] bytes = new byte[1];
             this.device.read(bytes, 0, 1);
             return Resolution.getResolution(bytes[0]);
-        } catch (IOException e) {
-            getLogger().error("Getting resolution failed because of an IOException: ", e);
+        } catch (final IOException exception) {
+            getLogger().error("Getting resolution failed because of an IOException: ", exception);
         }
         return null;
     }
@@ -208,11 +208,11 @@ public final class SHT21Impl implements SHT21 {
             this.device.write(Command.USER_REG_R.getCommandByte());
             delay(100);
 
-            byte[] bytes = new byte[1];
+            final byte[] bytes = new byte[1];
             this.device.read(bytes, 0, 1);
             return HeaterStatus.getStatus(bytes[0]);
-        } catch (IOException e) {
-            getLogger().error("Getting heater status failed. IOException: ", e);
+        } catch (final IOException exception) {
+            getLogger().error("Getting heater status failed. IOException: ", exception);
         }
         return null;
     }
@@ -237,7 +237,7 @@ public final class SHT21Impl implements SHT21 {
         try {
             this.device.write(Command.TRIG_T_MEASUREMENT_POLL.getCommandByte());
             delay(260);
-            byte[] bytes = new byte[3];
+            final byte[] bytes = new byte[3];
             this.device.read(bytes, 0, 3);
             final ByteBuffer bb = ByteBuffer.allocate(2);
             bb.order(ByteOrder.BIG_ENDIAN);
@@ -276,7 +276,7 @@ public final class SHT21Impl implements SHT21 {
                 return Float.MIN_VALUE;
             }
 
-        } catch (IOException exception) {
+        } catch (final IOException exception) {
             getLogger().error("Humidity measurement failed because of an IOException: ", exception);
             return Float.MIN_VALUE;
         }
