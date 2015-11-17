@@ -113,9 +113,9 @@ public final class SHT21Impl implements SHT21 {
 
     static float calcTemperatureC(final ByteBuffer buffer) {
         assert buffer != null;
-        short sT = buffer.getShort(0);
-        sT &= ~0x0003;
-        return -46.85f + 175.72f / 65536 * (float) sT;
+        short sTemp = buffer.getShort(0);
+        sTemp &= ~0x0003;
+        return -46.85f + 175.72f / 65536 * (float) sTemp;
     }
 
     /**
@@ -158,7 +158,7 @@ public final class SHT21Impl implements SHT21 {
         try {
             getLogger().debug("Writing byte " + String.format("0x%02X", Command.SOFT_RESET.getCommandByte()) + " to device " + this.device);
             this.device.write(Command.SOFT_RESET.getCommandByte());
-        } catch (IOException exception) {
+        } catch (final IOException exception) {
             getLogger().error("SoftReset failed with an IOException: ", exception);
         }
         delay(50);
@@ -172,11 +172,11 @@ public final class SHT21Impl implements SHT21 {
             getLogger().debug("Writing byte " + String.format("0x%02X", Command.USER_REG_R.getCommandByte()) + " to device " + this.device);
             this.device.write(Command.USER_REG_R.getCommandByte());
             delay(100);
-            byte[] bytes = new byte[1];
+            final byte[] bytes = new byte[1];
             this.device.read(bytes, 0, 1);
             return Resolution.getResolution(bytes[0]);
-        } catch (IOException e) {
-            getLogger().error("Getting resolution failed because of an IOException: ", e);
+        } catch (final IOException exception) {
+            getLogger().error("Getting resolution failed because of an IOException: ", exception);
         }
         return null;
     }
@@ -190,11 +190,11 @@ public final class SHT21Impl implements SHT21 {
             this.device.write(Command.USER_REG_R.getCommandByte());
             delay(100);
 
-            byte[] bytes = new byte[1];
+            final byte[] bytes = new byte[1];
             this.device.read(bytes, 0, 1);
             return EndOfBatteryAlert.getEOBAlert(bytes[0]);
-        } catch (IOException e) {
-            getLogger().error("getEOBAlert() failed.", e);
+        } catch (final IOException exception) {
+            getLogger().error("getEOBAlert() failed.", exception);
         }
         return null;
 
@@ -208,11 +208,11 @@ public final class SHT21Impl implements SHT21 {
             this.device.write(Command.USER_REG_R.getCommandByte());
             delay(100);
 
-            byte[] bytes = new byte[1];
+            final byte[] bytes = new byte[1];
             this.device.read(bytes, 0, 1);
             return HeaterStatus.getStatus(bytes[0]);
-        } catch (IOException e) {
-            getLogger().error("Getting heater status failed. IOException: ", e);
+        } catch (final IOException exception) {
+            getLogger().error("Getting heater status failed. IOException: ", exception);
         }
         return null;
     }
@@ -237,20 +237,20 @@ public final class SHT21Impl implements SHT21 {
         try {
             this.device.write(Command.TRIG_T_MEASUREMENT_POLL.getCommandByte());
             delay(260);
-            byte[] bytes = new byte[3];
+            final byte[] bytes = new byte[3];
             this.device.read(bytes, 0, 3);
-            final ByteBuffer bb = ByteBuffer.allocate(2);
-            bb.order(ByteOrder.BIG_ENDIAN);
-            bb.put(bytes[0]);
-            bb.put((byte) (bytes[1] & 0xFC));
+            final ByteBuffer buffer = ByteBuffer.allocate(2);
+            buffer.order(ByteOrder.BIG_ENDIAN);
+            buffer.put(bytes[0]);
+            buffer.put((byte) (bytes[1] & 0xFC));
 
             if (checkCrC(bytes)) {
-                return calcTemperatureC(bb);
+                return calcTemperatureC(buffer);
             } else {
                 return Float.MIN_VALUE;
             }
 
-        } catch (IOException exception) {
+        } catch (final IOException exception) {
             getLogger().error("Temperature measurement failed because of an IOException: ", exception);
             return Float.MIN_VALUE;
         }
@@ -265,18 +265,18 @@ public final class SHT21Impl implements SHT21 {
             delay(60);
             final byte[] bytes = new byte[3];
             this.device.read(bytes, 0, 3);
-            final ByteBuffer bb = ByteBuffer.allocate(2);
-            bb.order(ByteOrder.BIG_ENDIAN);
-            bb.put(bytes[0]);
-            bb.put((byte) (bytes[1] & 0xFC));
+            final ByteBuffer buffer = ByteBuffer.allocate(2);
+            buffer.order(ByteOrder.BIG_ENDIAN);
+            buffer.put(bytes[0]);
+            buffer.put((byte) (bytes[1] & 0xFC));
 
             if (checkCrC(bytes)) {
-                return calcRH(bb);
+                return calcRH(buffer);
             } else {
                 return Float.MIN_VALUE;
             }
 
-        } catch (IOException exception) {
+        } catch (final IOException exception) {
             getLogger().error("Humidity measurement failed because of an IOException: ", exception);
             return Float.MIN_VALUE;
         }
