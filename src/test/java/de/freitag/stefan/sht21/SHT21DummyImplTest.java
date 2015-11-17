@@ -23,6 +23,7 @@ public final class SHT21DummyImplTest {
      *
      * @return the {@link Logger} for this class.
      */
+    @SuppressWarnings("unused")
     private static Logger getLogger() {
         return LogManager.getLogger(SHT21DummyImpl.class.getCanonicalName());
     }
