@@ -1,11 +1,22 @@
 package de.freitag.stefan.sht21.export;
 
-import java.util.Objects;
+import de.freitag.stefan.sht21.model.MeasureType;
+import de.freitag.stefan.sht21.model.Measurement;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.*;
 
 /**
  * Base class for all exporters.
  */
 public abstract class AbstractExporter implements Exporter {
+
+    /**
+     * The {@link Logger} for this class.
+     */
+    private static final Logger LOG = LogManager.getLogger(AbstractExporter.class.getCanonicalName());
+
     /**
      * The name of this exporter.
      */
@@ -71,4 +82,31 @@ public abstract class AbstractExporter implements Exporter {
                 ", name='" + name + '\'' +
                 '}';
     }
+
+    /**
+     * Split the given measurements based on the {@link de.freitag.stefan.sht21.model.MeasureType}
+     *
+     * @param measurements A non-null list of measurements.
+     * @return
+     */
+    protected Map<MeasureType, List<Measurement>> splitMeasurements(final List<Measurement> measurements) {
+        assert measurements != null;
+        final List<Measurement> temperatureMeasurements = new ArrayList<>();
+        final List<Measurement> humidityMeasurements = new ArrayList<>();
+
+        for (final Measurement measurement : measurements) {
+            if (MeasureType.TEMPERATURE.equals(measurement.getType())) {
+                temperatureMeasurements.add(measurement);
+            } else if (MeasureType.HUMIDITY.equals(measurement.getType())) {
+                humidityMeasurements.add(measurement);
+            } else {
+                LOG.error("Unsupported measure type found. Type :" + measurement.getType());
+            }
+        }
+        final Map<MeasureType, List<Measurement>> splitLists = new HashMap<>();
+        splitLists.put(MeasureType.TEMPERATURE, temperatureMeasurements);
+        splitLists.put(MeasureType.HUMIDITY, humidityMeasurements);
+        return splitLists;
+    }
+
 }

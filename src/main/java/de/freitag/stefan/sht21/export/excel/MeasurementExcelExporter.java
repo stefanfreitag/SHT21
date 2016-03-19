@@ -119,32 +119,6 @@ public final class MeasurementExcelExporter extends AbstractExcelExporter {
         }
     }
 
-    /**
-     * Split the given measurements based on the {@link de.freitag.stefan.sht21.model.MeasureType}
-     *
-     * @param measurements A non-null list of measurements.
-     * @return
-     */
-    Map<MeasureType, List<Measurement>> splitMeasurements(final List<Measurement> measurements) {
-        final List<Measurement> temperatureMeasurements = new ArrayList<>();
-        final List<Measurement> humidityMeasurements = new ArrayList<>();
-
-        for (Measurement measurement : measurements) {
-            if (MeasureType.TEMPERATURE.equals(measurement.getType())) {
-                temperatureMeasurements.add(measurement);
-            } else if (MeasureType.HUMIDITY.equals(measurement.getType())) {
-                humidityMeasurements.add(measurement);
-            } else {
-                LOG.error("Unsupported measure type found. Type :" + measurement.getType());
-            }
-            //TODO: Return values missing
-
-        }
-        Map<MeasureType, List<Measurement>> splitLists = new HashMap<MeasureType, List<Measurement>>();
-        splitLists.put(MeasureType.TEMPERATURE, temperatureMeasurements);
-        splitLists.put(MeasureType.HUMIDITY, humidityMeasurements);
-        return splitLists;
-    }
 
 
     void drawLineChart() {

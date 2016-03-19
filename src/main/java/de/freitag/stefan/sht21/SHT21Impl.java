@@ -227,7 +227,7 @@ public final class SHT21Impl implements SHT21 {
                 return Measurement.create(this.measurePollTemperature(), MeasureType.TEMPERATURE);
             }
             default:
-                getLogger().error("MeasureType not supported.");
+                getLogger().error("MeasureType not supported: " + measureType);
                 return Measurement.create(Float.MIN_VALUE, MeasureType.UNDEFINED);
         }
     }
