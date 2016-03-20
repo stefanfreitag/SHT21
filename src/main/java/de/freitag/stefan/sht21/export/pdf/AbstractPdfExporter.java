@@ -12,21 +12,18 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 /**
- * Created by stefan on 08.03.16.
+ * Base class for PDF exporter
  */
 public abstract class AbstractPdfExporter extends AbstractExporter {
 
-    public static final String RESULT
-            = "hello_letter.pdf";
-
-    private final Document document;
-
-    private PdfWriter writer;
-
+    private static final String RESULT
+            = "output.pdf";
     /**
      * The {@link Logger} for this class.
      */
-    private Logger LOG = LogManager.getLogger(AbstractPdfExporter.class.getCanonicalName());
+    private static final Logger LOG = LogManager.getLogger(AbstractPdfExporter.class.getCanonicalName());
+    private final Document document;
+    private PdfWriter writer;
 
     /**
      * Create a new {@link AbstractExporter}
@@ -41,18 +38,16 @@ public abstract class AbstractPdfExporter extends AbstractExporter {
             this.writer = PdfWriter.getInstance(document, new FileOutputStream(RESULT));
             HeaderFooterPageEvent event = new HeaderFooterPageEvent();
             this.writer.setPageEvent(event);
-        } catch (final DocumentException exception) {
-            exception.printStackTrace();
-        } catch (final FileNotFoundException exception) {
-            exception.printStackTrace();
+        } catch (final DocumentException | FileNotFoundException exception) {
+            LOG.error(exception.getMessage(), exception);
         }
     }
 
-    protected Document getDocument() {
+    Document getDocument() {
         return this.document;
     }
 
-    protected PdfWriter getWriter() {
+    PdfWriter getWriter() {
         return this.writer;
     }
 }

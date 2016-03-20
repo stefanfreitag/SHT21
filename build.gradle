@@ -41,7 +41,7 @@ def pomConfig = {
     inceptionYear '2014'
     licenses {
         license {
-            name "The MIT License (MIT)"
+            name "AGPL"
             url "https://github.com/stefanfreitag/SHT21/blob/master/LICENSE"
             distribution "repo"
         }
@@ -108,7 +108,7 @@ bintray {
         websiteUrl = 'https://github.com/stefanfreitag/SHT21'
         issueTrackerUrl = 'https://github.com/stefanfreitag/SHT21/issues'
         vcsUrl = 'git://github.com/stefanfreitag/SHT21.git'
-        licenses = ['MIT']
+        licenses = ['AGPL']
         labels = ['Java', 'SHT21']
         publicDownloadNumbers = true
 	version {

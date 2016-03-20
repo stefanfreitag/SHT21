@@ -1,10 +1,15 @@
 package de.freitag.stefan.sht21.export.pdf;
 
+import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import de.freitag.stefan.sht21.model.MeasureType;
 import de.freitag.stefan.sht21.model.Measurement;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.DateFormat;
 import java.util.List;
@@ -12,10 +17,14 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Created by stefan on 12.03.16.
+ * PDF exporter for measurements.
  */
-public class MeasurementPdfExporter extends AbstractPdfExporter {
+public final class MeasurementPdfExporter extends AbstractPdfExporter {
 
+    /**
+     * The {@link Logger} for this class.
+     */
+    private static final Logger LOG = LogManager.getLogger(MeasurementPdfExporter.class.getCanonicalName());
     /**
      * Create a new {@link MeasurementPdfExporter}.
      *
@@ -49,25 +58,16 @@ public class MeasurementPdfExporter extends AbstractPdfExporter {
                 e.printStackTrace();
             }
         }
+        this.getDocument().newPage();
         if (!map.get(MeasureType.TEMPERATURE).isEmpty()) {
             final PdfPTable table = createPdfTable(map.get(MeasureType.TEMPERATURE), MeasureType.TEMPERATURE);
             try {
                 this.getDocument().add(table);
-            } catch (DocumentException e) {
-                e.printStackTrace();
+            } catch (final DocumentException exception) {
+                LOG.error(exception.getMessage(), exception);
             }
         }
         this.getDocument().close();
-//        //TODO:
-//        setSheetHeader();
-//        final List<String> headers = setColumnHeaders();
-//
-//
-//        createFooter();
-//        drawLineChart();
-//        setAutoColumnSize(headers);
-
-
         export();
 
     }
@@ -85,10 +85,22 @@ public class MeasurementPdfExporter extends AbstractPdfExporter {
 
     private PdfPTable createPdfTable(final List<Measurement> measurements, final MeasureType measureType) {
         final PdfPTable table = new PdfPTable(2);
+        PdfPCell cell = new PdfPCell(new Phrase("Date"));
+        cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(cell);
+
+
+        cell = new PdfPCell(new Phrase("Measurement"));
+        cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(cell);
+
+        table.setHeaderRows(1);
+        table.setSplitLate(true);
+        table.setSplitRows(true);
         for (Measurement measurement : measurements) {
             final DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.getDefault());
-
-
             table.addCell(new Phrase(dateFormat.format(measurement.getCreatedAt())));
             table.addCell(new Phrase(String.valueOf(measurement.getValue())));
         }

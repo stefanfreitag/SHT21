@@ -19,8 +19,8 @@ public class AbstractPdfExporterTest {
 
         MeasurementPdfExporter exporter = new MeasurementPdfExporter("xxx", "xxx");
         List<Measurement> measurements = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            Thread.sleep(100);
+        for (int i = 0; i < 100; i++) {
+            Thread.sleep(1);
             Measurement measurement = Measurement.create(ThreadLocalRandom.current().nextInt(12, 18 + 1), MeasureType.TEMPERATURE);
             measurements.add(measurement);
         }
