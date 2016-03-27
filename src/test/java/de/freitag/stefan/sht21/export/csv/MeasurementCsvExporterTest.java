@@ -1,4 +1,4 @@
-package de.freitag.stefan.sht21.export.excel;
+package de.freitag.stefan.sht21.export.csv;
 
 import de.freitag.stefan.sht21.model.MeasureType;
 import de.freitag.stefan.sht21.model.Measurement;
@@ -18,9 +18,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 /**
- * Test class for {@link MeasurementExcelExporter}.
+ * Test class for {@link MeasurementCsvExporter}.
  */
-public final class MeasurementExcelExporterTest {
+public final class MeasurementCsvExporterTest {
 
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolder();
@@ -28,11 +28,11 @@ public final class MeasurementExcelExporterTest {
     @Rule
     public Timeout globalTimeout = Timeout.seconds(10);
 
-
-    @SuppressWarnings("unused")
+    //@SuppressWarnings("unused")
+    @Test
     public void dummyDataExport() throws Exception {
-        Path outputPath = Paths.get("workbook.xlsx");
-        final MeasurementExcelExporter exporter = new MeasurementExcelExporter(outputPath);
+        Path outputPath = Paths.get("output.csv");
+        final MeasurementCsvExporter exporter = new MeasurementCsvExporter(outputPath);
         List<Measurement> measurements = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             Thread.sleep(100);
@@ -45,23 +45,14 @@ public final class MeasurementExcelExporterTest {
             measurements.add(measurement);
         }
         exporter.setData(measurements);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void constructorWithNullPathThrowsIllegalArgumentException() {
-        new MeasurementExcelExporter(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void constructorWithDirectoryAsPathThrowsIllegalArgumentException() {
-        new MeasurementExcelExporter(Paths.get(testFolder.getRoot().toString()));
+        exporter.export();
     }
 
     @Test
     public void getNameDoesNotReturnNull() {
         try {
             final String filePath = testFolder.newFile().toString();
-            final MeasurementExcelExporter exporter = new MeasurementExcelExporter(Paths.get(filePath));
+            final MeasurementCsvExporter exporter = new MeasurementCsvExporter(Paths.get(filePath));
             assertNotNull(exporter.getName());
         } catch (final IOException exception) {
             fail();
@@ -72,19 +63,8 @@ public final class MeasurementExcelExporterTest {
     public void getDescriptionDoesNotReturnNull() {
         try {
             final String filePath = testFolder.newFile().toString();
-            final MeasurementExcelExporter exporter = new MeasurementExcelExporter(Paths.get(filePath));
+            final MeasurementCsvExporter exporter = new MeasurementCsvExporter(Paths.get(filePath));
             assertNotNull(exporter.getDescription());
-        } catch (final IOException exception) {
-            fail();
-        }
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void setDataWithNullThrowsIllegalArgumentException() {
-        try {
-            final String filePath = testFolder.newFile().toString();
-            final MeasurementExcelExporter exporter = new MeasurementExcelExporter(Paths.get(filePath));
-            exporter.setData(null);
         } catch (final IOException exception) {
             fail();
         }

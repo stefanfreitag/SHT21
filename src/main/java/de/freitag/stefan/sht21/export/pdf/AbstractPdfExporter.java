@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.nio.file.Path;
 
 /**
  * Base class for PDF exporter
@@ -31,8 +32,8 @@ public abstract class AbstractPdfExporter extends AbstractExporter {
      * @param name        The non-null and non-empty name of the exporter.
      * @param description The non-null description of the exporter.
      */
-    protected AbstractPdfExporter(final String name, final String description) {
-        super(name, description);
+    protected AbstractPdfExporter(final String name, final String description, final Path filename) {
+        super(name, description, filename);
         this.document = new Document(PageSize.A4);
         try {
             this.writer = PdfWriter.getInstance(document, new FileOutputStream(RESULT));

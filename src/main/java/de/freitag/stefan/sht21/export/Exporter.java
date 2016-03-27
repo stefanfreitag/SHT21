@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface Exporter {
     /**
-     * Pass the {@link Measurement} objects to export to the exporter.
+     * Pass the non-null {@link Measurement} objects to export to the exporter.
      * The data items will be processed/ exported in order.
      *
      * @param measurements The {@link Measurement} objects to export.

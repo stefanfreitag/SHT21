@@ -24,6 +24,7 @@ public final class MeasurementExcelExporter extends AbstractExcelExporter {
     /**
      * The {@link Logger} for this class.
      */
+    @SuppressWarnings("unused")
     private static final Logger LOG = LogManager.getLogger(MeasurementExcelExporter.class.getCanonicalName());
     /**
      * The name of this exporter.
@@ -36,7 +37,7 @@ public final class MeasurementExcelExporter extends AbstractExcelExporter {
     /**
      * The {@link ResourceBundle} containing the localization information.
      */
-    private ResourceBundle bundle = ResourceBundle.getBundle("de.freitag.stefan.sht21.exporter.MeasurementExcelExporter", Locale.getDefault());
+    private ResourceBundle bundle = ResourceBundle.getBundle("de.freitag.stefan.sht21.export.MeasurementExcelExporter", Locale.getDefault());
 
     /**
      * Create a new MeasurementExcelExporter.
@@ -50,6 +51,9 @@ public final class MeasurementExcelExporter extends AbstractExcelExporter {
 
     @Override
     public void setData(final List<Measurement> measurements) {
+        if (measurements == null) {
+            throw new IllegalArgumentException("Measurements are null");
+        }
 
         final Map<MeasureType, List<Measurement>> map = splitMeasurements(measurements);
         if (!map.get(MeasureType.HUMIDITY).isEmpty()) {
@@ -120,8 +124,7 @@ public final class MeasurementExcelExporter extends AbstractExcelExporter {
     }
 
 
-
-    void drawLineChart() {
+    private void drawLineChart() {
         for (int i = 0; i < this.getWorkbook().getNumberOfSheets(); i++) {
             final Sheet sheet = this.getWorkbook().getSheetAt(i);
             final Drawing drawing = sheet.createDrawingPatriarch();

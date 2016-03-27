@@ -11,6 +11,7 @@ import de.freitag.stefan.sht21.model.Measurement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.nio.file.Path;
 import java.text.DateFormat;
 import java.util.List;
 import java.util.Locale;
@@ -25,14 +26,24 @@ public final class MeasurementPdfExporter extends AbstractPdfExporter {
      * The {@link Logger} for this class.
      */
     private static final Logger LOG = LogManager.getLogger(MeasurementPdfExporter.class.getCanonicalName());
+
+    /**
+     * The name of this exporter.
+     */
+    private static final String NAME = "PDF Exporter";
+    /**
+     * The description for this exporter.
+     */
+    private static final String DESCRIPTION = "Exports temperature and humidity measurements to a pdf file";
+
+
     /**
      * Create a new {@link MeasurementPdfExporter}.
      *
-     * @param name        The non-null and non-empty name of the exporter.
-     * @param description The non-null description of the exporter.
+     * @param path The {@link Path} for the output file.
      */
-    public MeasurementPdfExporter(final String name, final String description) {
-        super(name, description);
+    public MeasurementPdfExporter(final Path path) {
+        super(NAME, DESCRIPTION, path);
     }
 
     /**
@@ -54,8 +65,8 @@ public final class MeasurementPdfExporter extends AbstractPdfExporter {
             final PdfPTable table = createPdfTable(map.get(MeasureType.HUMIDITY), MeasureType.HUMIDITY);
             try {
                 this.getDocument().add(table);
-            } catch (DocumentException e) {
-                e.printStackTrace();
+            } catch (final DocumentException exception) {
+                LOG.error(exception.getMessage(), exception);
             }
         }
         this.getDocument().newPage();

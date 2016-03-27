@@ -10,7 +10,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.util.Date;
@@ -27,10 +26,7 @@ abstract class AbstractExcelExporter extends AbstractExporter {
      * The Excel workbook to fill with the data to export.
      */
     private final XSSFWorkbook workbook;
-    /**
-     * The {@link Path} of the file to export.
-     */
-    private final Path filename;
+
     /**
      * The {@link Logger} for this class.
      */
@@ -38,7 +34,7 @@ abstract class AbstractExcelExporter extends AbstractExporter {
     /**
      * The {@link ResourceBundle} containing the localization information.
      */
-    private ResourceBundle bundle = ResourceBundle.getBundle("de.freitag.stefan.sht21.exporter.AbstractExcelExporter", Locale.getDefault());
+    private ResourceBundle bundle = ResourceBundle.getBundle("de.freitag.stefan.sht21.export.AbstractExcelExporter", Locale.getDefault());
 
     /**
      * Create a new {@link AbstractExcelExporter}.
@@ -47,24 +43,10 @@ abstract class AbstractExcelExporter extends AbstractExporter {
      * @param description The non-null description of the exporter.
      * @param path        The {@link Path} for the output file.
      */
-    protected AbstractExcelExporter(final String name, final String description, final Path path) {
-        super(name, description);
-        if (!isValidPath(path)) {
-            throw new IllegalArgumentException("Not a valid path:" + (path == null ? "null" : path.toAbsolutePath()));
-        }
-        this.filename = path;
+    AbstractExcelExporter(final String name, final String description, final Path path) {
+        super(name, description, path);
         this.workbook = new XSSFWorkbook();
         setProperties(this.workbook.getProperties());
-    }
-
-    /**
-     * Checks for a valid {@link Path}.
-     *
-     * @param path The {@link Path} to check.
-     * @return {@code true} if {@code path} is valid, otherwise {@code false} is returned.
-     */
-    private static boolean isValidPath(final Path path) {
-        return path != null && !Files.isDirectory(path);
     }
 
     /**
@@ -111,7 +93,7 @@ abstract class AbstractExcelExporter extends AbstractExporter {
      * @param name The name of the new sheet.
      * @return The created sheet.
      */
-    protected Sheet addSheet(final String name) {
+    Sheet addSheet(final String name) {
         assert name != null;
         final String safeName = WorkbookUtil.createSafeSheetName(name);
         return this.workbook.createSheet(safeName);
@@ -123,7 +105,7 @@ abstract class AbstractExcelExporter extends AbstractExporter {
      * @param sheet   The sheet to apply the column headers to.
      * @param headers Non-null list of column headers
      */
-    protected void setColumnHeaders(final Sheet sheet, final List<String> headers) {
+    void setColumnHeaders(final Sheet sheet, final List<String> headers) {
         assert sheet != null;
         assert headers != null;
 
@@ -137,7 +119,7 @@ abstract class AbstractExcelExporter extends AbstractExporter {
     /**
      * Sets the {@link Header} for all workbook sheets.
      */
-    protected void setSheetHeader() {
+    void setSheetHeader() {
         final double numberOfSheets = this.workbook.getNumberOfSheets();
         for (int i = 0; i < numberOfSheets; i++) {
             final Header header = this.workbook.getSheetAt(i).getHeader();
@@ -148,7 +130,7 @@ abstract class AbstractExcelExporter extends AbstractExporter {
     /**
      * Sets the {@link Footer} for all workbook sheets.
      */
-    protected void createFooter() {
+    void createFooter() {
         final int numberOfSheets = this.workbook.getNumberOfSheets();
         final Date createdAt = new Date();
         final DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
@@ -163,7 +145,7 @@ abstract class AbstractExcelExporter extends AbstractExporter {
     @Override
     public boolean export() {
         try {
-            final FileOutputStream fos = new FileOutputStream(filename.toString());
+            final FileOutputStream fos = new FileOutputStream(this.getFilename().toString());
             this.workbook.write(fos);
             fos.close();
             return true;
@@ -191,7 +173,7 @@ abstract class AbstractExcelExporter extends AbstractExporter {
      *
      * @return the {@link XSSFWorkbook}.
      */
-    protected XSSFWorkbook getWorkbook() {
+    XSSFWorkbook getWorkbook() {
         return this.workbook;
     }
 }
