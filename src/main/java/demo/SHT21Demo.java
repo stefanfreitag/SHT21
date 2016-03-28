@@ -71,8 +71,14 @@ public final class SHT21Demo {
             final EndOfBatteryAlert eobAlert = sht21.getEndOfBatteryAlert();
             getLogger().info("End of battery alert: " + eobAlert);
         } else if ("humidity".equalsIgnoreCase(demoType)) {
-            final Measurement measurement = sht21.measurePoll(MeasureType.HUMIDITY);
-            getLogger().info("Relative Humidity [%]: " + String.format("%.2f", measurement.getValue()));
+            final Measurement measurement;
+            try {
+                measurement = sht21.measurePoll(MeasureType.HUMIDITY);
+                getLogger().info("Relative Humidity [%]: " + String.format("%.2f", measurement.getValue()));
+            } catch (final UnsupportedMeasureTypeException exception) {
+                getLogger().error(exception.getMessage(), exception);
+            }
+
         } else if ("resolution".equalsIgnoreCase(demoType)) {
             final Resolution resolution = sht21.getResolution();
             getLogger().info("Resolution: " + resolution);
@@ -80,8 +86,14 @@ public final class SHT21Demo {
             final HeaterStatus eobAlert = sht21.getHeaterStatus();
             getLogger().info("Heater status: " + eobAlert);
         } else if ("temperature".equalsIgnoreCase(demoType)) {
-            final Measurement measurement = sht21.measurePoll(MeasureType.TEMPERATURE);
-            getLogger().info("Measured temperature [deg C]: " + String.format("%.2f", measurement.getValue()));
+            final Measurement measurement;
+            try {
+                measurement = sht21.measurePoll(MeasureType.TEMPERATURE);
+                getLogger().info("Measured temperature [deg C]: " + String.format("%.2f", measurement.getValue()));
+            } catch (final UnsupportedMeasureTypeException exception) {
+                getLogger().error(exception.getMessage(), exception);
+            }
+
         }
     }
 

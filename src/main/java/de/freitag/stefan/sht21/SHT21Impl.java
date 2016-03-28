@@ -154,7 +154,7 @@ public final class SHT21Impl implements SHT21 {
     /**
      * Performs a reset.
      */
-    public void softReset() {
+    void softReset() {
         try {
             getLogger().debug("Writing byte " + String.format("0x%02X", Command.SOFT_RESET.getCommandByte()) + " to device " + this.device);
             this.device.write(Command.SOFT_RESET.getCommandByte());
@@ -218,7 +218,7 @@ public final class SHT21Impl implements SHT21 {
     }
 
     @Override
-    public Measurement measurePoll(final MeasureType measureType) {
+    public Measurement measurePoll(final MeasureType measureType) throws UnsupportedMeasureTypeException {
         switch (measureType) {
             case HUMIDITY: {
                 return Measurement.create(this.measurePollHumidity(), MeasureType.HUMIDITY);
@@ -227,8 +227,7 @@ public final class SHT21Impl implements SHT21 {
                 return Measurement.create(this.measurePollTemperature(), MeasureType.TEMPERATURE);
             }
             default:
-                getLogger().error("MeasureType not supported: " + measureType);
-                return Measurement.create(Float.MIN_VALUE, MeasureType.UNDEFINED);
+                throw new UnsupportedMeasureTypeException("MeasureType not supported: " + measureType);
         }
     }
 

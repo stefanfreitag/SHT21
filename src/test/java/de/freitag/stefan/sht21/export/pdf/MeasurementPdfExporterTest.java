@@ -25,16 +25,16 @@ public final class MeasurementPdfExporterTest {
 
     @SuppressWarnings("unused")
     public void xxx() throws InterruptedException, IOException {
-        MeasurementPdfExporter exporter = new MeasurementPdfExporter(testFolder.newFile().toPath());
-        List<Measurement> measurements = new ArrayList<>();
+        final MeasurementPdfExporter exporter = new MeasurementPdfExporter(testFolder.newFile().toPath());
+        final List<Measurement> measurements = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             Thread.sleep(1);
-            Measurement measurement = Measurement.create(ThreadLocalRandom.current().nextInt(12, 18 + 1), MeasureType.TEMPERATURE);
+            final Measurement measurement = Measurement.create(ThreadLocalRandom.current().nextInt(12, 18 + 1), MeasureType.TEMPERATURE);
             measurements.add(measurement);
         }
         for (int i = 0; i < 10; i++) {
             Thread.sleep(100);
-            Measurement measurement = Measurement.create(ThreadLocalRandom.current().nextInt(12, 18 + 1), MeasureType.HUMIDITY);
+            final Measurement measurement = Measurement.create(ThreadLocalRandom.current().nextInt(12, 18 + 1), MeasureType.HUMIDITY);
             measurements.add(measurement);
         }
         exporter.setData(measurements);

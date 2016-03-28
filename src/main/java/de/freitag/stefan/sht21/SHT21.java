@@ -30,7 +30,8 @@ public interface SHT21 {
      *
      * @param measureType Either temperature or humidity measurement.
      * @return A {@link Measurement}.
+     * @throws UnsupportedMeasureTypeException if an unsupported measure type was specified.
      */
-    Measurement measurePoll(MeasureType measureType);
+    Measurement measurePoll(MeasureType measureType) throws UnsupportedMeasureTypeException;
 
 }

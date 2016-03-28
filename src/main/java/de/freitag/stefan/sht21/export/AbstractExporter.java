@@ -25,11 +25,11 @@ public abstract class AbstractExporter implements Exporter {
     /**
      * The name of this exporter.
      */
-    private String name;
+    private final String name;
     /**
      * A brief description about the purpose of this exporter.
      */
-    private String description;
+    private final String description;
 
     /**
      * Create a new {@link AbstractExporter}

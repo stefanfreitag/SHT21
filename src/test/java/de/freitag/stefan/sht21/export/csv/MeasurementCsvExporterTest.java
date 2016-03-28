@@ -31,17 +31,17 @@ public final class MeasurementCsvExporterTest {
     //@SuppressWarnings("unused")
     @Test
     public void dummyDataExport() throws Exception {
-        Path outputPath = Paths.get("output.csv");
+        final Path outputPath = Paths.get("output.csv");
         final MeasurementCsvExporter exporter = new MeasurementCsvExporter(outputPath);
-        List<Measurement> measurements = new ArrayList<>();
+        final List<Measurement> measurements = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             Thread.sleep(100);
-            Measurement measurement = Measurement.create(ThreadLocalRandom.current().nextInt(12, 18 + 1), MeasureType.TEMPERATURE);
+            final Measurement measurement = Measurement.create(ThreadLocalRandom.current().nextInt(12, 18 + 1), MeasureType.TEMPERATURE);
             measurements.add(measurement);
         }
         for (int i = 0; i < 10; i++) {
             Thread.sleep(100);
-            Measurement measurement = Measurement.create(ThreadLocalRandom.current().nextInt(12, 18 + 1), MeasureType.HUMIDITY);
+            final Measurement measurement = Measurement.create(ThreadLocalRandom.current().nextInt(12, 18 + 1), MeasureType.HUMIDITY);
             measurements.add(measurement);
         }
         exporter.setData(measurements);

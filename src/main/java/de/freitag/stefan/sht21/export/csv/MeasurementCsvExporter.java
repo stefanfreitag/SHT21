@@ -6,8 +6,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ public final class MeasurementCsvExporter extends AbstractCsvExporter {
     /**
      * The {@link Logger} for this class.
      */
-    private Logger LOG = LogManager.getLogger(MeasurementCsvExporter.class.getCanonicalName());
+    private static final Logger LOG = LogManager.getLogger(MeasurementCsvExporter.class.getCanonicalName());
     private Map<MeasureType, List<Measurement>> map;
 
 
@@ -70,10 +71,10 @@ public final class MeasurementCsvExporter extends AbstractCsvExporter {
         return true;
     }
 
-    private boolean writeToCsvFile(final List<Measurement> measurements, MeasureType measureType) {
+    private boolean writeToCsvFile(final List<Measurement> measurements, final MeasureType measureType) {
         assert measurements != null;
+        assert measureType != null;
 
-        FileWriter fw = null;
         BufferedWriter writer = null;
         try {
             //TODO: generate file name based on measuretype
@@ -84,8 +85,10 @@ public final class MeasurementCsvExporter extends AbstractCsvExporter {
                 xxx = xxx + "temperature";
             }
 
-            fw = new FileWriter(xxx);
-            writer = new BufferedWriter(fw);
+            writer = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(xxx), "UTF-8"
+            ));
+
 
             writer.write("timestamp");
             writer.write(SEPARATOR);
@@ -120,14 +123,6 @@ public final class MeasurementCsvExporter extends AbstractCsvExporter {
             if (writer != null) {
                 try {
                     writer.close();
-                } catch (final IOException exception) {
-                    LOG.error(exception.getMessage(), exception);
-                }
-            }
-
-            if (fw != null) {
-                try {
-                    fw.close();
                 } catch (final IOException exception) {
                     LOG.error(exception.getMessage(), exception);
                 }

@@ -37,7 +37,7 @@ public final class MeasurementExcelExporter extends AbstractExcelExporter {
     /**
      * The {@link ResourceBundle} containing the localization information.
      */
-    private ResourceBundle bundle = ResourceBundle.getBundle("de.freitag.stefan.sht21.export.MeasurementExcelExporter", Locale.getDefault());
+    private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("de.freitag.stefan.sht21.export.MeasurementExcelExporter", Locale.getDefault());
 
     /**
      * Create a new MeasurementExcelExporter.
@@ -57,11 +57,11 @@ public final class MeasurementExcelExporter extends AbstractExcelExporter {
 
         final Map<MeasureType, List<Measurement>> map = splitMeasurements(measurements);
         if (!map.get(MeasureType.HUMIDITY).isEmpty()) {
-            final Sheet sheet = this.addSheet(bundle.getString("HUMIDITY"));
+            final Sheet sheet = this.addSheet(BUNDLE.getString("HUMIDITY"));
             addData(map.get(MeasureType.HUMIDITY), sheet);
         }
         if (!map.get(MeasureType.TEMPERATURE).isEmpty()) {
-            final Sheet sheet = this.addSheet(bundle.getString("TEMPERATURE"));
+            final Sheet sheet = this.addSheet(BUNDLE.getString("TEMPERATURE"));
             addData(map.get(MeasureType.TEMPERATURE), sheet);
         }
 
@@ -93,7 +93,7 @@ public final class MeasurementExcelExporter extends AbstractExcelExporter {
 
     private void setAutoColumnSize(final List<String> headers) {
         //TODO: Fix usage of header length
-        for (Sheet sheet : this.getWorkbook()) {
+        for (final Sheet sheet : this.getWorkbook()) {
             for (int i = 0; i < headers.size(); i++) {
                 sheet.autoSizeColumn(i);
             }
@@ -101,18 +101,17 @@ public final class MeasurementExcelExporter extends AbstractExcelExporter {
         }
     }
 
-    private void addData(List<Measurement> measurements, Sheet sheet) {
-        CreationHelper createHelper = this.getWorkbook().getCreationHelper();
+    private void addData(final List<Measurement> measurements, final Sheet sheet) {
+        assert measurements != null;
+        assert sheet != null;
+        final CreationHelper createHelper = this.getWorkbook().getCreationHelper();
         int i = 1;
         for (final Measurement measurement : measurements) {
+            final Row row = sheet.createRow(i++);
 
-
-            Row row = sheet.createRow(i++);
-
-            Cell cell = row.createCell(0);
-            CellStyle cellStyle = this.getWorkbook().createCellStyle();
-
-            String datePattern = DateTimeFormatterBuilder.getLocalizedDateTimePattern(
+            final Cell cell = row.createCell(0);
+            final CellStyle cellStyle = this.getWorkbook().createCellStyle();
+            final String datePattern = DateTimeFormatterBuilder.getLocalizedDateTimePattern(
                     FormatStyle.MEDIUM, FormatStyle.MEDIUM, IsoChronology.INSTANCE,
                     Locale.getDefault());
             cellStyle.setDataFormat(
@@ -145,7 +144,7 @@ public final class MeasurementExcelExporter extends AbstractExcelExporter {
 
             final LineChartData data = chart.getChartDataFactory().createLineChartData();
             final LineChartSeries series = data.addSeries(xSource, ySource);
-            CellReference ref = new CellReference(sheet.getSheetName(), 0, 1, true, true);
+            final CellReference ref = new CellReference(sheet.getSheetName(), 0, 1, true, true);
             series.setTitle(ref);
             chart.plot(data, bottomAxis, leftAxis);
 

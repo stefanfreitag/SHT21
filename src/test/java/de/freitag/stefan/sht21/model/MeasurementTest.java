@@ -4,6 +4,9 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+/**
+ * Test class for {@link Measurement}.
+ */
 public final class MeasurementTest {
 
     @Test(expected = NullPointerException.class)

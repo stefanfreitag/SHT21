@@ -11,9 +11,5 @@ public enum MeasureType {
     /**
      * Temperature measurement.
      */
-    TEMPERATURE,
-    /**
-     * Undefined measurement.
-     */
-    UNDEFINED
+    TEMPERATURE
 }

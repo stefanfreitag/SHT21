@@ -1,6 +1,7 @@
 package de.freitag.stefan.sht21;
 
 import de.freitag.stefan.sht21.model.MeasureType;
+import de.freitag.stefan.sht21.model.UnsupportedMeasureTypeException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
@@ -44,12 +45,12 @@ public final class SHT21DummyImplTest {
     }
 
     @Test
-    public void measurePollReturnsNotNull() {
+    public void measurePollReturnsNotNull() throws UnsupportedMeasureTypeException {
         assertNotNull(sht21.measurePoll(MeasureType.TEMPERATURE));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void measurePollWithNullMeasureTypeThrowsIllegalArgumentException() {
+    public void measurePollWithNullMeasureTypeThrowsIllegalArgumentException() throws UnsupportedMeasureTypeException {
         sht21.measurePoll(null);
     }
 }

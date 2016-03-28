@@ -31,17 +31,17 @@ public final class MeasurementExcelExporterTest {
 
     @SuppressWarnings("unused")
     public void dummyDataExport() throws Exception {
-        Path outputPath = Paths.get("workbook.xlsx");
+        final Path outputPath = Paths.get("workbook.xlsx");
         final MeasurementExcelExporter exporter = new MeasurementExcelExporter(outputPath);
-        List<Measurement> measurements = new ArrayList<>();
+        final List<Measurement> measurements = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             Thread.sleep(100);
-            Measurement measurement = Measurement.create(ThreadLocalRandom.current().nextInt(12, 18 + 1), MeasureType.TEMPERATURE);
+            final Measurement measurement = Measurement.create(ThreadLocalRandom.current().nextInt(12, 18 + 1), MeasureType.TEMPERATURE);
             measurements.add(measurement);
         }
         for (int i = 0; i < 10; i++) {
             Thread.sleep(100);
-            Measurement measurement = Measurement.create(ThreadLocalRandom.current().nextInt(12, 18 + 1), MeasureType.HUMIDITY);
+            final Measurement measurement = Measurement.create(ThreadLocalRandom.current().nextInt(12, 18 + 1), MeasureType.HUMIDITY);
             measurements.add(measurement);
         }
         exporter.setData(measurements);

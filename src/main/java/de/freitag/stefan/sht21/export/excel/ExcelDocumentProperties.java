@@ -5,6 +5,9 @@ package de.freitag.stefan.sht21.export.excel;
  */
 final class ExcelDocumentProperties {
 
+    private ExcelDocumentProperties() {
+        //empty method
+    }
     /**
      * The core properties.
      */
@@ -35,6 +38,9 @@ final class ExcelDocumentProperties {
          */
         private static final String CATEGORY = "Data Export";
 
+        private Core() {
+            //empty method
+        }
         public static String getCreator() {
             return CREATOR;
         }
@@ -66,6 +72,10 @@ final class ExcelDocumentProperties {
     public static class Extended {
         private static final String COMPANY = "not available";
 
+        private Extended() {
+            //empty method
+        }
+
         public static String getCompany() {
             return COMPANY;
         }
@@ -78,6 +88,10 @@ final class ExcelDocumentProperties {
         private static final String AUTHOR = "Stefan Freitag";
         private static final int YEAR = 2016;
         private static final boolean PUBLISHED = false;
+
+        private Custom() {
+            //empty method
+        }
 
         public static String getAuthor() {
             return AUTHOR;

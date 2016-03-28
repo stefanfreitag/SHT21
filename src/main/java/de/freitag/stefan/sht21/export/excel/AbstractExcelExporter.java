@@ -23,18 +23,17 @@ import java.util.ResourceBundle;
 abstract class AbstractExcelExporter extends AbstractExporter {
 
     /**
-     * The Excel workbook to fill with the data to export.
-     */
-    private final XSSFWorkbook workbook;
-
-    /**
      * The {@link Logger} for this class.
      */
-    private Logger LOG = LogManager.getLogger(AbstractExcelExporter.class.getCanonicalName());
+    private static final Logger LOG = LogManager.getLogger(AbstractExcelExporter.class.getCanonicalName());
     /**
      * The {@link ResourceBundle} containing the localization information.
      */
-    private ResourceBundle bundle = ResourceBundle.getBundle("de.freitag.stefan.sht21.export.AbstractExcelExporter", Locale.getDefault());
+    private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("de.freitag.stefan.sht21.export.AbstractExcelExporter", Locale.getDefault());
+    /**
+     * The Excel workbook to fill with the data to export.
+     */
+    private final XSSFWorkbook workbook;
 
     /**
      * Create a new {@link AbstractExcelExporter}.
@@ -123,7 +122,7 @@ abstract class AbstractExcelExporter extends AbstractExporter {
         final double numberOfSheets = this.workbook.getNumberOfSheets();
         for (int i = 0; i < numberOfSheets; i++) {
             final Header header = this.workbook.getSheetAt(i).getHeader();
-            header.setCenter(bundle.getString("TITLE"));
+            header.setCenter(BUNDLE.getString("TITLE"));
         }
     }
 
@@ -137,22 +136,32 @@ abstract class AbstractExcelExporter extends AbstractExporter {
                 DateFormat.MEDIUM, Locale.getDefault());
         for (int i = 0; i < numberOfSheets; i++) {
             final Footer footer = this.workbook.getSheetAt(i).getFooter();
-            footer.setLeft(bundle.getString("CREATED_AT") + ": " + dateFormat.format(createdAt));
-            footer.setRight(bundle.getString("SHEET") + " " + (i + 1) + " " + bundle.getString("OF") + " " + numberOfSheets);
+            footer.setLeft(BUNDLE.getString("CREATED_AT") + ": " + dateFormat.format(createdAt));
+            footer.setRight(BUNDLE.getString("SHEET") + " " + (i + 1) + " " + BUNDLE.getString("OF") + " " + numberOfSheets);
         }
     }
 
     @Override
     public boolean export() {
+        FileOutputStream fos = null;
         try {
-            final FileOutputStream fos = new FileOutputStream(this.getFilename().toString());
+            fos = new FileOutputStream(this.getFilename().toString());
             this.workbook.write(fos);
-            fos.close();
             return true;
         } catch (final IOException exception) {
             LOG.error(exception.getMessage(), exception);
             return false;
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (final IOException exception) {
+                    LOG.error(exception.getMessage(), exception);
+
+                }
+            }
         }
+
     }
 
     /**

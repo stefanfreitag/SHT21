@@ -13,23 +13,27 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
- * Created by stefan on 08.03.16.
+ * Used for adding header and footer to pdf pages.
  */
-
 public final class HeaderFooterPageEvent extends PdfPageEventHelper {
 
     /**
      * The {@link ResourceBundle} containing the localization information.
      */
-    private ResourceBundle bundle = ResourceBundle.getBundle("de.freitag.stefan.sht21.export.pdf.HeaderFooterPageEvent", Locale.getDefault());
+    private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("de.freitag.stefan.sht21.export.pdf.HeaderFooterPageEvent", Locale.getDefault());
 
 
     public void onStartPage(final PdfWriter writer, final Document document) {
-
-        ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_CENTER, new Phrase(bundle.getString("TITLE")), 280, 810, 0);
+        if (writer == null) {
+            throw new IllegalArgumentException("PdfWriter is null");
+        }
+        ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_CENTER, new Phrase(BUNDLE.getString("TITLE")), 280, 810, 0);
     }
 
     public void onEndPage(final PdfWriter writer, final Document document) {
+        if (writer == null) {
+            throw new IllegalArgumentException("PdfWriter is null");
+        }
         final Date createdAt = new Date();
         final DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
                 DateFormat.MEDIUM, Locale.getDefault());

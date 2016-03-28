@@ -15,7 +15,7 @@ abstract class AbstractCsvExporter extends AbstractExporter {
      * The {@link Logger} for this class.
      */
     @SuppressWarnings("unused")
-    private Logger LOG = LogManager.getLogger(AbstractCsvExporter.class.getCanonicalName());
+    private static final Logger LOG = LogManager.getLogger(AbstractCsvExporter.class.getCanonicalName());
 
     /**
      * Create a new {@link AbstractCsvExporter}.

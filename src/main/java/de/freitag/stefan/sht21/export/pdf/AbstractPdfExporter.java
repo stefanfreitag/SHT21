@@ -31,13 +31,14 @@ public abstract class AbstractPdfExporter extends AbstractExporter {
      *
      * @param name        The non-null and non-empty name of the exporter.
      * @param description The non-null description of the exporter.
+     * @param path    The {@link Path} for the output file.
      */
-    protected AbstractPdfExporter(final String name, final String description, final Path filename) {
-        super(name, description, filename);
+    protected AbstractPdfExporter(final String name, final String description, final Path path) {
+        super(name, description, path);
         this.document = new Document(PageSize.A4);
         try {
             this.writer = PdfWriter.getInstance(document, new FileOutputStream(RESULT));
-            HeaderFooterPageEvent event = new HeaderFooterPageEvent();
+            final HeaderFooterPageEvent event = new HeaderFooterPageEvent();
             this.writer.setPageEvent(event);
         } catch (final DocumentException | FileNotFoundException exception) {
             LOG.error(exception.getMessage(), exception);
