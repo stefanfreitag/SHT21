@@ -32,6 +32,10 @@ public final class MeasurementCsvExporter extends AbstractCsvExporter {
      * The {@link Logger} for this class.
      */
     private static final Logger LOG = LogManager.getLogger(MeasurementCsvExporter.class.getCanonicalName());
+
+    /**
+     * Contains the measurements split by {@link MeasureType}.
+     */
     private Map<MeasureType, List<Measurement>> map;
 
 
@@ -77,13 +81,8 @@ public final class MeasurementCsvExporter extends AbstractCsvExporter {
 
         BufferedWriter writer = null;
         try {
-            //TODO: generate file name based on measuretype
-            String xxx = this.getFilename().toString();
-            if (measureType == MeasureType.HUMIDITY) {
-                xxx = xxx + "humidity";
-            } else if (measureType == MeasureType.TEMPERATURE) {
-                xxx = xxx + "temperature";
-            }
+            String xxx = createFileName(measureType);
+
 
             writer = new BufferedWriter(new OutputStreamWriter(
                     new FileOutputStream(xxx), "UTF-8"
@@ -95,7 +94,6 @@ public final class MeasurementCsvExporter extends AbstractCsvExporter {
             writer.write("value");
             writer.write(SEPARATOR);
             writer.write("unit");
-            writer.write(SEPARATOR);
 
             String unit;
             if (measureType == MeasureType.HUMIDITY) {
@@ -108,7 +106,7 @@ public final class MeasurementCsvExporter extends AbstractCsvExporter {
 
 
             for (final Measurement measurement : measurements) {
-                writer.write(measurement.getCreatedAt().toString());
+                writer.write(String.valueOf(measurement.getCreatedAt().getTime()));
                 writer.write(';');
                 writer.write(String.valueOf(measurement.getValue()));
                 writer.write(';');
@@ -128,5 +126,17 @@ public final class MeasurementCsvExporter extends AbstractCsvExporter {
                 }
             }
         }
+    }
+
+    private String createFileName(final MeasureType measureType) {
+        assert measureType != null;
+
+        String name = this.getFilename().toString();
+        if (measureType == MeasureType.HUMIDITY) {
+            name = "humidity_" + name;
+        } else if (measureType == MeasureType.TEMPERATURE) {
+            name = "temperature_" + name;
+        }
+        return name;
     }
 }
