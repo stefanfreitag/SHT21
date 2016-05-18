@@ -23,6 +23,7 @@ public final class MeasurementPdfExporterTest {
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolder();
 
+    @Test
     @SuppressWarnings("unused")
     public void xxx() throws InterruptedException, IOException {
         final MeasurementPdfExporter exporter = new MeasurementPdfExporter(testFolder.newFile().toPath());
@@ -33,7 +34,7 @@ public final class MeasurementPdfExporterTest {
             measurements.add(measurement);
         }
         for (int i = 0; i < 10; i++) {
-            Thread.sleep(100);
+            Thread.sleep(1000);
             final Measurement measurement = Measurement.create(ThreadLocalRandom.current().nextInt(12, 18 + 1), MeasureType.HUMIDITY);
             measurements.add(measurement);
         }

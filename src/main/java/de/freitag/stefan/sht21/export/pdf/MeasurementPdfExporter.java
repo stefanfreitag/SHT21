@@ -1,9 +1,6 @@
 package de.freitag.stefan.sht21.export.pdf;
 
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Phrase;
+import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import de.freitag.stefan.sht21.model.MeasureType;
@@ -70,6 +67,11 @@ public final class MeasurementPdfExporter extends AbstractPdfExporter {
             }
         }
         this.getDocument().newPage();
+        try {
+            this.getDocument().add(new Paragraph("Temperatur"));
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
         if (!map.get(MeasureType.TEMPERATURE).isEmpty()) {
             final PdfPTable table = createPdfTable(map.get(MeasureType.TEMPERATURE), MeasureType.TEMPERATURE);
             try {
