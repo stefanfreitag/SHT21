@@ -2,6 +2,8 @@ package de.freitag.stefan.sht21.data;
 
 import de.freitag.stefan.sht21.model.MeasureType;
 import de.freitag.stefan.sht21.model.Measurement;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -13,21 +15,29 @@ import java.util.Properties;
 /**
  * Created by stefan on 30.05.16.
  */
-public class SqliteDatastore implements Datastore {
+public final class SqliteDatastore implements Datastore {
 
+    /**
+     * The name of the table storing the temperature measurements.
+     */
+    private static final String temperatureTable = "temperature";
+    /**
+     * The name of the table storing the humidity measurements.
+     */
+    private static final String humidityTable = "humidity";
 
+    /**
+     * Contains information required for connecting to the database.
+     */
     private final JDBCConfiguration configuration;
-    private final String temperatureTable = "temperature";
-    private final String humidityTable = "humidity";
     private Connection connection;
-    private String databaseName = "Measurements";
 
-    public SqliteDatastore() {
-        this.configuration = xxx();
+
+    public SqliteDatastore() throws InvalidJDBCConfigurationException {
+        this.configuration = createJDBCConfiguration();
 
         try {
             Class.forName("org.sqlite.JDBC");
-
             this.connection = DriverManager.getConnection(this.configuration.getUrl());
             this.createDatabase();
         } catch (Exception ex) {
@@ -35,19 +45,30 @@ public class SqliteDatastore implements Datastore {
         }
     }
 
-    private JDBCConfiguration xxx() {
+    /**
+     * Return the {@link Logger} for this class.
+     *
+     * @return the {@link Logger} for this class.
+     */
+    private static Logger getLogger() {
+        return LogManager.getLogger(SqliteDatastore.class.getCanonicalName());
+    }
+
+    private JDBCConfiguration createJDBCConfiguration() throws InvalidJDBCConfigurationException {
         final Properties properties = new Properties();
         try {
             properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("config.properties"));
-            String url = properties.getProperty("jdbc.url");
-            String driver = properties.getProperty("jdbc.driver");
-            String username = properties.getProperty("jdbc.username");
-            String password = properties.getProperty("jdbc.password");
-            return new JDBCConfiguration(url, driver, username, password);
         } catch (final IOException exception) {
-            exception.printStackTrace();
-            return null;
+            getLogger().error(exception.getMessage(), exception);
+            throw new InvalidJDBCConfigurationException("Unable to load properties file");
         }
+        final String url = properties.getProperty("jdbc.url");
+        final String driver = properties.getProperty("jdbc.driver");
+        final String username = properties.getProperty("jdbc.username");
+        final String password = properties.getProperty("jdbc.password");
+
+        return new JDBCConfiguration(url, driver, username, password);
+
 
     }
 
@@ -114,16 +135,14 @@ public class SqliteDatastore implements Datastore {
             //statement.execute("CREATE DATABASE IF NOT EXISTS `" + databaseName+ "`");
 
             statement.executeUpdate("create table IF NOT EXISTS " +
-                    this.temperatureTable + " (id integer primary key, value real, measuredat integer)");
-            statement.executeUpdate("create unique index IF NOT EXISTS IdxTemperature on " + this.temperatureTable + " (measuredat, value)");
+                    temperatureTable + " (id integer primary key, value real, measuredat integer)");
+            statement.executeUpdate("create unique index IF NOT EXISTS IdxTemperature on " + temperatureTable + " (measuredat, value)");
 
-            statement.executeUpdate("create table IF NOT EXISTS " + this.humidityTable + " (id integer primary key, value real, measuredat integer)");
-            statement.executeUpdate("create unique index IF NOT EXISTS IdxTemperature on " + this.humidityTable + "(measuredat, value)");
+            statement.executeUpdate("create table IF NOT EXISTS " + humidityTable + " (id integer primary key, value real, measuredat integer)");
+            statement.executeUpdate("create unique index IF NOT EXISTS IdxTemperature on " + humidityTable + "(measuredat, value)");
 
         } catch (final SQLException exception) {
             exception.printStackTrace();
         }
-
-
     }
 }
