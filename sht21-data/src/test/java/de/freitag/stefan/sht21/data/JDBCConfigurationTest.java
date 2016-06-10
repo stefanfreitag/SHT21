@@ -7,8 +7,8 @@ import org.junit.Test;
  */
 public final class JDBCConfigurationTest {
 
-    @Test(expected = IllegalArgumentException.class)
-    public void constructorWithNullUrlThrowsIllegalArgumentException() {
+    @Test(expected = InvalidJDBCConfigurationException.class)
+    public void constructorWithNullUrlThrowsIllegalArgumentException() throws InvalidJDBCConfigurationException {
         final String url = null;
         final String driver = "driver";
         final String username = "username";
@@ -16,8 +16,8 @@ public final class JDBCConfigurationTest {
         new JDBCConfiguration(url, driver, username, password);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void constructorWithNullUsernameThrowsIllegalArgumentException() {
+    @Test(expected = InvalidJDBCConfigurationException.class)
+    public void constructorWithNullUsernameThrowsIllegalArgumentException() throws InvalidJDBCConfigurationException {
         final String url = "url";
         final String driver = "driver";
         final String username = null;
@@ -25,8 +25,8 @@ public final class JDBCConfigurationTest {
         new JDBCConfiguration(url, driver, username, password);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void constructorWithEmptyUsernameThrowsIllegalArgumentException() {
+    @Test(expected = InvalidJDBCConfigurationException.class)
+    public void constructorWithEmptyUsernameThrowsIllegalArgumentException() throws InvalidJDBCConfigurationException {
         final String url = "url";
         final String driver = "driver";
         final String username = "";
@@ -34,8 +34,8 @@ public final class JDBCConfigurationTest {
         new JDBCConfiguration(url, driver, username, password);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void constructorWithNullPasswordThrowsIllegalArgumentException() {
+    @Test(expected = InvalidJDBCConfigurationException.class)
+    public void constructorWithNullPasswordThrowsIllegalArgumentException() throws InvalidJDBCConfigurationException {
         final String url = "url";
         final String driver = "driver";
         final String username = "user";
@@ -43,8 +43,8 @@ public final class JDBCConfigurationTest {
         new JDBCConfiguration(url, driver, username, password);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void constructorWithEmptyPasswordThrowsIllegalArgumentException() {
+    @Test(expected = InvalidJDBCConfigurationException.class)
+    public void constructorWithEmptyPasswordThrowsIllegalArgumentException() throws InvalidJDBCConfigurationException {
         final String url = "url";
         final String driver = "driver";
         final String username = "user";
