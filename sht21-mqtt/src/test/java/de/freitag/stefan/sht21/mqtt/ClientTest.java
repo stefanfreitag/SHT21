@@ -14,8 +14,7 @@ public final class ClientTest {
     @Test
     public void XXX() {
         final Client client = new Client(new Configuration(
-                "tcp://192.168.178.44", "domain", "deviceId",
-                "", ""
+                "tcp://192.168.178.44", "domain", "deviceId"
         ));
         //sending client.xxx();
     }

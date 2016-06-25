@@ -15,7 +15,7 @@ public final class Configuration {
      * Create a new {@link Configuration}.
      *
      * @param brokerUrl A non-null broker URL.
-     * @param domain
+     * @param domain The MQTT domain.
      * @param deviceId  Unique identifier for the device.
      */
     public Configuration(final String brokerUrl, final String domain, final String deviceId) {

@@ -1,5 +1,7 @@
 package de.freitag.stefan.sht21.model;
 
+import com.google.gson.Gson;
+
 import java.util.Date;
 import java.util.Objects;
 
@@ -85,11 +87,8 @@ public final class Measurement {
         if (!createdAt.equals(that.createdAt)) {
             return false;
         }
-        if (type != that.type) {
-            return false;
-        }
+        return type == that.type;
 
-        return true;
     }
 
     @Override
@@ -107,5 +106,15 @@ public final class Measurement {
                 ", value=" + value +
                 ", type=" + type +
                 '}';
+    }
+
+    /**
+     * Return the json representation of this {@link Measurement}.
+     *
+     * @return {@code String} containing the json representation of this {@link Measurement}.
+     */
+    public String toJson() {
+        final Gson gson = new Gson();
+        return gson.toJson(this);
     }
 }
