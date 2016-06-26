@@ -8,7 +8,7 @@ import java.util.Objects;
 public final class Configuration {
 
     private final String brokerUrl;
-    private final String domain;// = "<Insert m2m.io domain here>";
+    private final String domain;
     private final String deviceId;
 
     /**

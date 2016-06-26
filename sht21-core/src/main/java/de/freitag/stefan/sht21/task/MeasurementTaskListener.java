@@ -1,4 +1,4 @@
-package de.freitag.stefan.sht21;
+package de.freitag.stefan.sht21.task;
 
 import de.freitag.stefan.sht21.model.Measurement;
 

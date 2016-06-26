@@ -1,6 +1,8 @@
 package de.freitag.stefan.sht21;
 
 import de.freitag.stefan.sht21.model.MeasureType;
+import de.freitag.stefan.sht21.task.MeasurementTask;
+import de.freitag.stefan.sht21.task.MeasurementTaskListener;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

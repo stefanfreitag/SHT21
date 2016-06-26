@@ -1,5 +1,7 @@
-package de.freitag.stefan.sht21;
+package de.freitag.stefan.sht21.task;
 
+import de.freitag.stefan.sht21.SHT21;
+import de.freitag.stefan.sht21.SHT21DummyImpl;
 import de.freitag.stefan.sht21.model.MeasureType;
 import de.freitag.stefan.sht21.model.Measurement;
 import de.freitag.stefan.sht21.model.UnsupportedMeasureTypeException;
@@ -8,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -18,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  * A {@link MeasurementTask} contains information about the type of measurement
  * (temperature/ humidity) to make and the desired interval between two measurements.
  */
-public final class MeasurementTask {
+public final class MeasurementTask extends AbstractTask {
 
     /**
      * The minimum interval between measurements.
@@ -28,10 +29,7 @@ public final class MeasurementTask {
      * Device address.
      */
     private static final int I2C_ADDRESS = 0x40;
-    /**
-     * The unique identifier of this task.
-     */
-    private final UUID uuid;
+
     /**
      * The interval between measurements.
      */
@@ -48,13 +46,14 @@ public final class MeasurementTask {
      * @param measureType A non-null {@link MeasureType}.
      */
     public MeasurementTask(final long interval, final MeasureType measureType) {
+        super();
         if (measureType == null) {
             throw new IllegalArgumentException(MeasureType.class.getSimpleName() + " is null");
         }
         if (interval < MINIMUM_INTERVAL) {
-            throw new IllegalArgumentException("Interval must be greater than " + MINIMUM_INTERVAL + " milliseconds.");
+            throw new IllegalArgumentException("Interval must be equal to or greater than " + MINIMUM_INTERVAL + " milliseconds.");
         }
-        this.uuid = UUID.randomUUID();
+
         this.listeners = new CopyOnWriteArrayList<>();
         this.interval = interval;
         this.service = Executors.newScheduledThreadPool(1);
@@ -83,14 +82,6 @@ public final class MeasurementTask {
         return LogManager.getLogger(MeasurementTask.class.getCanonicalName());
     }
 
-    /**
-     * Return the unique id of this task.
-     *
-     * @return {@link UUID} of this task.
-     */
-    public UUID getUuid() {
-        return this.uuid;
-    }
 
     /**
      * Return the desired interval between to measurements for this task.
@@ -118,7 +109,7 @@ public final class MeasurementTask {
     public String toString() {
         return "MeasurementTask{" +
                 "interval=" + interval +
-                ", uuid=" + uuid +
+                ", uuid=" + getUuid() +
                 '}';
     }
 
@@ -138,4 +129,5 @@ public final class MeasurementTask {
             listener.onReceived(measurement);
         }
     }
+
 }

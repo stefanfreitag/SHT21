@@ -38,14 +38,10 @@ public class Client implements SHT21Client, MqttCallback {
         return LogManager.getLogger(Client.class.getCanonicalName());
     }
 
-    private void sendMessage() {
 
-    }
-
-    private MqttMessage createMessage() {
-        String pubMsg = "{\"pubmsg\":" + "}";
+    private MqttMessage createMessage(String json) {
         int pubQoS = 0;
-        final MqttMessage message = new MqttMessage(pubMsg.getBytes());
+        final MqttMessage message = new MqttMessage(json.getBytes());
         message.setQos(pubQoS);
         message.setRetained(false);
         return message;
@@ -124,7 +120,7 @@ public class Client implements SHT21Client, MqttCallback {
     public void send(final Measurement measurement) {
         final String myTopic = this.configuration.getDomain() + "/" + this.configuration.getDeviceId();
         final MqttTopic topic = myClient.getTopic(myTopic);
-        final MqttMessage message = createMessage();
+        final MqttMessage message = createMessage(measurement.toJson());
 
         try {
             final MqttDeliveryToken token = topic.publish(message);
@@ -133,6 +129,6 @@ public class Client implements SHT21Client, MqttCallback {
         } catch (final MqttException | InterruptedException exception) {
             getLogger().error(exception.getMessage(), exception);
         }
-        disconnect();
+        //disconnect();
     }
 }
