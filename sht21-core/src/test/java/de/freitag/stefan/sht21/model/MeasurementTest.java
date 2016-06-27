@@ -1,5 +1,6 @@
 package de.freitag.stefan.sht21.model;
 
+import com.google.gson.Gson;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -39,6 +40,15 @@ public final class MeasurementTest {
 
     }
 
+    @Test
+    public void toJsonReturnsExpectedObject() {
+        final Measurement measurement = Measurement.create(12.2f, MeasureType.HUMIDITY);
+        final String json = measurement.toJson();
 
+        final Gson gson = new Gson();
+        final Measurement fromJson = gson.fromJson(json, Measurement.class);
+        assertEquals(12.2f, fromJson.getValue(), 0.0001f);
+        assertEquals(MeasureType.HUMIDITY, fromJson.getType());
+    }
 
 }
