@@ -129,6 +129,5 @@ public class Client implements SHT21Client, MqttCallback {
         } catch (final MqttException | InterruptedException exception) {
             getLogger().error(exception.getMessage(), exception);
         }
-        //disconnect();
     }
 }

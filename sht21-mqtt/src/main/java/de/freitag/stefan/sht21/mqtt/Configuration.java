@@ -3,7 +3,7 @@ package de.freitag.stefan.sht21.mqtt;
 import java.util.Objects;
 
 /**
- * MQTT configuration.
+ * An MQTT configuration used for setting up a {@link Client}.
  */
 public final class Configuration {
 
@@ -16,7 +16,7 @@ public final class Configuration {
      *
      * @param brokerUrl A non-null broker URL.
      * @param domain The MQTT domain.
-     * @param deviceId  Unique identifier for the device.
+     * @param deviceId  A non-null and non-empty unique identifier for the device.
      */
     public Configuration(final String brokerUrl, final String domain, final String deviceId) {
         if (brokerUrl == null) {
@@ -37,14 +37,27 @@ public final class Configuration {
         this.deviceId = deviceId;
     }
 
+    /**
+     * Return the MQTT broker url.
+     *
+     * @return the MQTT broker url.
+     */
     public String getBrokerUrl() {
         return this.brokerUrl;
     }
 
+    /**
+     * Return the MQTT domain.
+     * @return the MQTT domain.
+     */
     public String getDomain() {
         return this.domain;
     }
 
+    /**
+     * The MQTT device id.
+     * @return The MQTT device id.
+     */
     public String getDeviceId() {
         return this.deviceId;
     }

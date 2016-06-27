@@ -38,7 +38,7 @@ abstract class AbstractTask implements Task {
 
     @Override
     public boolean isStarted() {
-        return false;
+        return this.started;
     }
 
     @Override
@@ -46,5 +46,8 @@ abstract class AbstractTask implements Task {
         this.canceled = true;
     }
 
-
+    @Override
+    public boolean isCanceled() {
+        return this.canceled;
+    }
 }

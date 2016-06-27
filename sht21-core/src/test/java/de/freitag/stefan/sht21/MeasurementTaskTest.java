@@ -44,4 +44,31 @@ public final class MeasurementTaskTest {
         assertTrue(task.addListener(listener));
         assertFalse(task.addListener(listener));
     }
+
+    @Test
+    public void isStartedReturnsFalseForNotStartedTask() {
+        final MeasurementTask task = new MeasurementTask(10_000L, MeasureType.TEMPERATURE);
+        assertFalse(task.isStarted());
+    }
+
+    @Test
+    public void isStartedReturnsTrueForStartedTask() {
+        final MeasurementTask task = new MeasurementTask(10_000L, MeasureType.TEMPERATURE);
+        task.start();
+        assertTrue(task.isStarted());
+    }
+
+    @Test
+    public void isCanceledReturnsFalseForNotCanceledTask() {
+        final MeasurementTask task = new MeasurementTask(10_000L, MeasureType.TEMPERATURE);
+        assertFalse(task.isCanceled());
+    }
+
+    @Test
+    public void isCanceledReturnsTrueForCanceledTask() {
+        final MeasurementTask task = new MeasurementTask(10_000L, MeasureType.TEMPERATURE);
+        task.start();
+        task.cancel();
+        assertTrue(task.isCanceled());
+    }
 }
