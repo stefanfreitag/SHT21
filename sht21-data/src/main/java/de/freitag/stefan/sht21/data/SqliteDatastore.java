@@ -5,15 +5,14 @@ import de.freitag.stefan.sht21.model.Measurement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
+import java.util.List;
 
 /**
- * Created by stefan on 30.05.16.
+ * An SQLite3 datastore.
  */
 public final class SqliteDatastore implements Datastore {
 
@@ -32,9 +31,16 @@ public final class SqliteDatastore implements Datastore {
     private final JDBCConfiguration configuration;
     private Connection connection;
 
-
-    public SqliteDatastore() throws InvalidJDBCConfigurationException {
-        this.configuration = createJDBCConfiguration();
+    /**
+     * Create a new {@link SqliteDatastore}.
+     *
+     * @param configuration A non-null {@link JDBCConfiguration}.
+     */
+    public SqliteDatastore(final JDBCConfiguration configuration) {
+        if (configuration == null) {
+            throw new IllegalArgumentException("Configuration is null");
+        }
+        this.configuration = configuration;
 
         try {
             Class.forName("org.sqlite.JDBC");
@@ -54,47 +60,65 @@ public final class SqliteDatastore implements Datastore {
         return LogManager.getLogger(SqliteDatastore.class.getCanonicalName());
     }
 
-    private JDBCConfiguration createJDBCConfiguration() throws InvalidJDBCConfigurationException {
-        final Properties properties = new Properties();
-        try {
-            properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("config.properties"));
-        } catch (final IOException exception) {
-            getLogger().error(exception.getMessage(), exception);
-            throw new InvalidJDBCConfigurationException("Unable to load properties file");
-        }
-        final String url = properties.getProperty("jdbc.url");
-        final String driver = properties.getProperty("jdbc.driver");
-        final String username = properties.getProperty("jdbc.username");
-        final String password = properties.getProperty("jdbc.password");
-
-        return new JDBCConfiguration(url, driver, username, password);
-
-
-    }
 
     @Override
     public boolean insert(final Measurement measurement) {
         if (measurement == null) {
             throw new IllegalArgumentException("Measurement is null");
         }
+        final String table = this.getTableNameFromType(measurement);
+        final Statement statement;
+        try {
+            statement = this.connection.createStatement();
+            statement.executeUpdate("insert into " + table + " values(NULL," + measurement.getValue() + "," + measurement.getValue() + ")");
+        } catch (final SQLException exception) {
+            getLogger().error(exception.getMessage(), exception);
+        }
+        return false;
+    }
+
+    private String getTableNameFromType(final Measurement measurement) {
+        assert measurement != null;
         String table = "";
         if (MeasureType.HUMIDITY.equals(measurement.getType())) {
             table = humidityTable;
         } else if (MeasureType.TEMPERATURE.equals(measurement.getType())) {
             table = temperatureTable;
         }
-        final Statement statement;
-        try {
-            statement = this.connection.createStatement();
-            statement.executeUpdate("insert into " + table + " values(NULL," + measurement.getValue() + "," + measurement.getValue() + ")");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
+        return table;
     }
 
+    /**
+     * Return the latest {@link Measurement} of the given {@link MeasureType}.
+     *
+     * @param measureType The non-null {@link MeasureType} to retrieve
+     *                    data for.
+     * @return Latest {@link Measurement} of the given {@link MeasureType}.
+     */
     @Override
-    public Measurement getLatest() {
+    public Measurement getLatest(final MeasureType measureType) {
+        if (measureType == null) {
+            throw new IllegalArgumentException("MeasureType is null");
+        }
+        //TODO
+        return null;
+    }
+
+    /**
+     * Return the latest {@link Measurement} of the given {@link MeasureType}.
+     *
+     * @param measureType The non-null {@link MeasureType} to retrieve
+     *                    data for.
+     * @param start
+     * @param end
+     * @return Measurements belonging to the interval [start, end].
+     */
+    @Override
+    public List<Measurement> get(MeasureType measureType, long start, long end) {
+        if (measureType == null) {
+            throw new IllegalArgumentException("MeasureType is null");
+        }
+        //TODO
         return null;
     }
 
@@ -120,9 +144,9 @@ public final class SqliteDatastore implements Datastore {
         final Statement statement;
         try {
             statement = this.connection.createStatement();
-            statement.executeUpdate("select count(*) from " + table + ")");
-        } catch (SQLException e) {
-            e.printStackTrace();
+            statement.executeUpdate("select count(*) from " + table + ";");
+        } catch (final SQLException exception) {
+            getLogger().error(exception.getMessage(), exception);
         }
         return 0;
     }

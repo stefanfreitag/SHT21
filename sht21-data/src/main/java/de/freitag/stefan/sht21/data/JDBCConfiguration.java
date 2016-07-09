@@ -2,7 +2,12 @@
 package de.freitag.stefan.sht21.data;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.IOException;
 import java.util.Objects;
+import java.util.Properties;
 
 public final class JDBCConfiguration {
     /**
@@ -50,6 +55,38 @@ public final class JDBCConfiguration {
         this.password = password;
     }
 
+    /**
+     * Create a {@link JDBCConfiguration} from the information provided
+     * by the file {@code config.properties}.
+     *
+     * @return
+     * @throws InvalidJDBCConfigurationException if the file could not be loaded
+     */
+    static JDBCConfiguration fromProperties() throws InvalidJDBCConfigurationException {
+        final Properties properties = new Properties();
+        try {
+            properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("config.properties"));
+        } catch (final IOException exception) {
+            getLogger().error(exception.getMessage(), exception);
+            throw new InvalidJDBCConfigurationException("Unable to load properties file");
+        }
+        final String url = properties.getProperty("jdbc.url");
+        final String driver = properties.getProperty("jdbc.driver");
+        final String username = properties.getProperty("jdbc.username");
+        final String password = properties.getProperty("jdbc.password");
+
+        return new JDBCConfiguration(url, driver, username, password);
+    }
+
+    /**
+     * Return the {@link Logger} for this class.
+     *
+     * @return the {@link Logger} for this class.
+     */
+    private static Logger getLogger() {
+        return LogManager.getLogger(SqliteDatastore.class.getCanonicalName());
+    }
+
     public String getUrl() {
         return this.url;
     }
@@ -91,4 +128,5 @@ public final class JDBCConfiguration {
                 ", username='" + username + '\'' +
                 '}';
     }
+
 }
