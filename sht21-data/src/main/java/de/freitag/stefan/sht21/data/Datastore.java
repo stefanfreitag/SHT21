@@ -27,10 +27,13 @@ public interface Datastore {
 
 
     /**
-     * Return the latest {@link Measurement} of the given {@link MeasureType}.
+     * Return the {@link Measurement}s of the given {@link MeasureType} for the given
+     * interval.
      *
      * @param measureType The non-null {@link MeasureType} to retrieve
      *                    data for.
+     * @param start Start time of interval in ms since epoch.
+     * @param end End time of interval in ms since epoch.
      * @return Measurements belonging to the interval [start, end].
      */
     List<Measurement> get(MeasureType measureType, final long start, final long end);
@@ -41,7 +44,12 @@ public interface Datastore {
      * the given {@code measureType}.
      * @param measureType  The {@link MeasureType}
      * @return Amount of stored measurements for the given
-     * measurement type.
+     * measurement type. In case of an error, -1 will be returned.
      */
     long size(MeasureType measureType);
+
+    /**
+     * Remove all measuremente from the database.
+     */
+    void clear();
 }

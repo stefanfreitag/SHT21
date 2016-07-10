@@ -31,6 +31,7 @@ public final class JDBCConfiguration {
      * @param driver
      * @param username Non-null and non-empty login name used for database authentication.
      * @param password Non-null and non-empty password used for database authentication.
+     * @throws InvalidJDBCConfigurationException
      */
     public JDBCConfiguration(final String url, final String driver, final String username, final String password) throws InvalidJDBCConfigurationException {
         if (url == null) {

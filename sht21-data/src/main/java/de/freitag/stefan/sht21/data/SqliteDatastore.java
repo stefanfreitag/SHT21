@@ -5,10 +5,7 @@ import de.freitag.stefan.sht21.model.Measurement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
 
 /**
@@ -46,8 +43,8 @@ public final class SqliteDatastore implements Datastore {
             Class.forName("org.sqlite.JDBC");
             this.connection = DriverManager.getConnection(this.configuration.getUrl());
             this.createDatabase();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (final Exception exception) {
+            getLogger().error(exception.getMessage(), exception);
         }
     }
 
@@ -70,7 +67,8 @@ public final class SqliteDatastore implements Datastore {
         final Statement statement;
         try {
             statement = this.connection.createStatement();
-            statement.executeUpdate("insert into " + table + " values(NULL," + measurement.getValue() + "," + measurement.getValue() + ")");
+            final int result = statement.executeUpdate("insert into " + table + " values(NULL," + measurement.getValue() + "," + measurement.getCreatedAt().getTime() + ")");
+            return result == 1;
         } catch (final SQLException exception) {
             getLogger().error(exception.getMessage(), exception);
         }
@@ -104,17 +102,8 @@ public final class SqliteDatastore implements Datastore {
         return null;
     }
 
-    /**
-     * Return the latest {@link Measurement} of the given {@link MeasureType}.
-     *
-     * @param measureType The non-null {@link MeasureType} to retrieve
-     *                    data for.
-     * @param start
-     * @param end
-     * @return Measurements belonging to the interval [start, end].
-     */
     @Override
-    public List<Measurement> get(MeasureType measureType, long start, long end) {
+    public List<Measurement> get(final MeasureType measureType, final long start, final long end) {
         if (measureType == null) {
             throw new IllegalArgumentException("MeasureType is null");
         }
@@ -122,17 +111,11 @@ public final class SqliteDatastore implements Datastore {
         return null;
     }
 
-    /**
-     * @param measureType
-     * @return
-     */
     @Override
     public long size(final MeasureType measureType) {
         if (measureType == null) {
             throw new IllegalArgumentException(MeasureType.class.getSimpleName() + " is null.");
         }
-
-
         String table = "";
         if (MeasureType.HUMIDITY.equals(measureType)) {
             table = humidityTable;
@@ -144,11 +127,24 @@ public final class SqliteDatastore implements Datastore {
         final Statement statement;
         try {
             statement = this.connection.createStatement();
-            statement.executeUpdate("select count(*) from " + table + ";");
+            final ResultSet resultSet = statement.executeQuery("select count(*) as total from " + table + ";");
+            return resultSet.getInt("total");
         } catch (final SQLException exception) {
             getLogger().error(exception.getMessage(), exception);
         }
-        return 0;
+        return -1;
+    }
+
+    @Override
+    public void clear() {
+        final Statement statement;
+        try {
+            statement = this.connection.createStatement();
+            statement.execute("delete from " + humidityTable + ";");
+            statement.execute("delete from " + temperatureTable + ";");
+        } catch (final SQLException exception) {
+            getLogger().error(exception.getMessage(), exception);
+        }
     }
 
     private void createDatabase() {
