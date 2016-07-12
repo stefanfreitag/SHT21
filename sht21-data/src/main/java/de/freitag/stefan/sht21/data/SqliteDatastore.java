@@ -26,7 +26,7 @@ public final class SqliteDatastore implements Datastore {
      * Contains information required for connecting to the database.
      */
     private final JDBCConfiguration configuration;
-    private Connection connection;
+
 
     /**
      * Create a new {@link SqliteDatastore}.
@@ -41,7 +41,6 @@ public final class SqliteDatastore implements Datastore {
 
         try {
             Class.forName("org.sqlite.JDBC");
-            this.connection = DriverManager.getConnection(this.configuration.getUrl());
             this.createDatabase();
         } catch (final Exception exception) {
             getLogger().error(exception.getMessage(), exception);
@@ -65,14 +64,25 @@ public final class SqliteDatastore implements Datastore {
         }
         final String table = this.getTableNameFromType(measurement);
         final Statement statement;
+        Connection connection = null;
         try {
-            statement = this.connection.createStatement();
+            connection = getConnection();
+            statement = connection.createStatement();
             final int result = statement.executeUpdate("insert into " + table + " values(NULL," + measurement.getValue() + "," + measurement.getCreatedAt().getTime() + ")");
             return result == 1;
         } catch (final SQLException exception) {
             getLogger().error(exception.getMessage(), exception);
+            return false;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (final SQLException exception) {
+                // empty method
+            }
         }
-        return false;
+
     }
 
     private String getTableNameFromType(final Measurement measurement) {
@@ -122,36 +132,55 @@ public final class SqliteDatastore implements Datastore {
         } else if (MeasureType.TEMPERATURE.equals(measureType)) {
             table = temperatureTable;
         }
-
-
+        Connection connection = null;
         final Statement statement;
         try {
-            statement = this.connection.createStatement();
+            connection = this.getConnection();
+            statement = connection.createStatement();
             final ResultSet resultSet = statement.executeQuery("select count(*) as total from " + table + ";");
             return resultSet.getInt("total");
         } catch (final SQLException exception) {
             getLogger().error(exception.getMessage(), exception);
+            return -1;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (final SQLException exception) {
+                // empty method
+            }
         }
-        return -1;
+
     }
 
     @Override
     public void clear() {
+        Connection connection = null;
         final Statement statement;
         try {
-            statement = this.connection.createStatement();
+            connection = this.getConnection();
+            statement = connection.createStatement();
             statement.execute("delete from " + humidityTable + ";");
             statement.execute("delete from " + temperatureTable + ";");
         } catch (final SQLException exception) {
             getLogger().error(exception.getMessage(), exception);
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (final SQLException exception) {
+                // empty method
+            }
         }
     }
 
     private void createDatabase() {
-
+        Connection connection = null;
         try {
-
-            final Statement statement = this.connection.createStatement();
+            connection = this.getConnection();
+            final Statement statement = connection.createStatement();
             //statement.execute("CREATE DATABASE IF NOT EXISTS `" + databaseName+ "`");
 
             statement.executeUpdate("create table IF NOT EXISTS " +
@@ -162,7 +191,19 @@ public final class SqliteDatastore implements Datastore {
             statement.executeUpdate("create unique index IF NOT EXISTS IdxTemperature on " + humidityTable + "(measuredat, value)");
 
         } catch (final SQLException exception) {
-            exception.printStackTrace();
+            getLogger().error(exception.getMessage(), exception);
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (final SQLException exception) {
+                // empty method
+            }
         }
+    }
+
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(this.configuration.getUrl());
     }
 }

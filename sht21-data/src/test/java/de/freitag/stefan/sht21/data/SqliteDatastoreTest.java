@@ -26,6 +26,16 @@ public final class SqliteDatastoreTest {
         datastore.insert(null);
     }
 
+    @Test
+    public void insertInEmptyDatabaseReturnsTrue() throws InvalidJDBCConfigurationException {
+        final JDBCConfiguration configuration = JDBCConfiguration.fromProperties();
+        final SqliteDatastore datastore = new SqliteDatastore(configuration);
+        final Measurement measurement = Measurement.create(11.0f, MeasureType.TEMPERATURE);
+
+        assertTrue(datastore.insert(measurement));
+    }
+
+
     @Test(expected = IllegalArgumentException.class)
     public void sizeWithNullThrowsIllegalArgumentException() throws InvalidJDBCConfigurationException {
         final JDBCConfiguration configuration = JDBCConfiguration.fromProperties();
