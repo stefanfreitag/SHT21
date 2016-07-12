@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -131,4 +132,28 @@ public final class SqliteDatastoreTest {
         final SqliteDatastore datastore = new SqliteDatastore(configuration);
         datastore.get(null, 0L, 1L);
     }
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getWithNegativeStartThrowsIllegalArgumentException() throws InvalidJDBCConfigurationException {
+        final JDBCConfiguration configuration = JDBCConfiguration.fromProperties();
+        final SqliteDatastore datastore = new SqliteDatastore(configuration);
+        datastore.get(MeasureType.HUMIDITY, -10L, 1L);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getWithEndGreaterThanStartThrowsIllegalArgumentException() throws InvalidJDBCConfigurationException {
+        final JDBCConfiguration configuration = JDBCConfiguration.fromProperties();
+        final SqliteDatastore datastore = new SqliteDatastore(configuration);
+        datastore.get(MeasureType.HUMIDITY, 10L, 5L);
+    }
+
+    @Test
+    public void getWithFreshDatabaseReturnsEmptyCollection() throws InvalidJDBCConfigurationException {
+        final JDBCConfiguration configuration = JDBCConfiguration.fromProperties();
+        final SqliteDatastore datastore = new SqliteDatastore(configuration);
+        final List<MeasurementEntity> entities = datastore.get(MeasureType.HUMIDITY, 10L, 10_000L);
+        assertEquals(0, entities.size());
+    }
+
 }
