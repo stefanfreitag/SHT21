@@ -7,6 +7,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -159,15 +161,61 @@ public final class SqliteDatastore implements Datastore {
         if (measureType == null) {
             throw new IllegalArgumentException("MeasureType is null");
         }
+        if (start < 0) {
+            throw new IllegalArgumentException("Start must be equal to or greater than 0");
+        }
 
+        if (end < start) {
+            throw new IllegalArgumentException("End must be equal to or greater than start");
+        }
         String table = "";
         if (MeasureType.HUMIDITY.equals(measureType)) {
             table = humidityTable;
         } else if (MeasureType.TEMPERATURE.equals(measureType)) {
             table = temperatureTable;
         }
-        //TODO
-        return null;
+
+        Connection connection = null;
+
+        try {
+            connection = this.getConnection();
+            final PreparedStatement preparedStatement = connection.prepareStatement("select * from " + table + " where measuredAt > ? and measuredAt < ? ;");
+            preparedStatement.setDate(1, new java.sql.Date(start));
+            preparedStatement.setDate(2, new java.sql.Date(end));
+
+            final ResultSet resultSet = preparedStatement.executeQuery();
+            final List<MeasurementEntity> entities = new ArrayList<>();
+            while (resultSet.next()) {
+                final long id = resultSet.getLong(1);
+                final float value = resultSet.getFloat(2);
+                final Date measuredAt = resultSet.getDate(3);
+
+                final MeasurementEntity entity = new MeasurementEntity();
+                entity.setId(id);
+                entity.setValue(value);
+                if (MeasureType.TEMPERATURE.equals(measureType)) {
+                    entity.setType(MeasureType.TEMPERATURE);
+                } else if (MeasureType.HUMIDITY.equals(measureType)) {
+                    entity.setType(MeasureType.HUMIDITY);
+                }
+                entity.setCreatedAt(measuredAt);
+                entities.add(entity);
+
+            }
+            return entities;
+        } catch (final SQLException exception) {
+            getLogger().error(exception.getMessage(), exception);
+            return Collections.emptyList();
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (final SQLException exception) {
+                // empty method
+            }
+        }
+
     }
 
     @Override
