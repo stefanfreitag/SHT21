@@ -1,5 +1,6 @@
 package de.freitag.stefan.sht21.data;
 
+import de.freitag.stefan.sht21.data.model.MeasurementEntity;
 import de.freitag.stefan.sht21.model.MeasureType;
 import de.freitag.stefan.sht21.model.Measurement;
 import org.apache.logging.log4j.LogManager;
@@ -58,7 +59,7 @@ public final class SqliteDatastore implements Datastore {
 
 
     @Override
-    public boolean insert(final Measurement measurement) {
+    public boolean insert(final MeasurementEntity measurement) {
         if (measurement == null) {
             throw new IllegalArgumentException("Measurement is null");
         }
@@ -71,7 +72,7 @@ public final class SqliteDatastore implements Datastore {
             final int result = statement.executeUpdate("insert into " + table + " values(NULL," + measurement.getValue() + "," + measurement.getCreatedAt().getTime() + ")");
             return result == 1;
         } catch (final SQLException exception) {
-            getLogger().error(exception.getMessage(), exception);
+            getLogger().error("Failed to insert " + measurement + ". Reason: " + exception.getMessage());
             return false;
         } finally {
             try {
@@ -85,7 +86,7 @@ public final class SqliteDatastore implements Datastore {
 
     }
 
-    private String getTableNameFromType(final Measurement measurement) {
+    private String getTableNameFromType(final MeasurementEntity measurement) {
         assert measurement != null;
         String table = "";
         if (MeasureType.HUMIDITY.equals(measurement.getType())) {
@@ -101,21 +102,69 @@ public final class SqliteDatastore implements Datastore {
      *
      * @param measureType The non-null {@link MeasureType} to retrieve
      *                    data for.
-     * @return Latest {@link Measurement} of the given {@link MeasureType}.
+     * @return Latest {@link MeasurementEntity} of the given {@link MeasureType}.
      */
     @Override
-    public Measurement getLatest(final MeasureType measureType) {
+    public MeasurementEntity getLatest(final MeasureType measureType) {
         if (measureType == null) {
             throw new IllegalArgumentException("MeasureType is null");
         }
-        //TODO
-        return null;
+
+        String table = "";
+        if (MeasureType.HUMIDITY.equals(measureType)) {
+            table = humidityTable;
+        } else if (MeasureType.TEMPERATURE.equals(measureType)) {
+            table = temperatureTable;
+        }
+        Connection connection = null;
+        final Statement statement;
+        try {
+            connection = this.getConnection();
+            statement = connection.createStatement();
+            final ResultSet resultSet = statement.executeQuery("select * from " + table + " order by measuredAt desc limit 1;");
+
+            if (resultSet.next()) {
+                final long id = resultSet.getLong(1);
+                final float value = resultSet.getFloat(2);
+                final Date measuredAt = resultSet.getDate(3);
+
+                final MeasurementEntity entity = new MeasurementEntity();
+                entity.setId(id);
+                entity.setValue(value);
+                if (MeasureType.TEMPERATURE.equals(measureType)) {
+                    entity.setType(MeasureType.TEMPERATURE);
+                } else if (MeasureType.HUMIDITY.equals(measureType)) {
+                    entity.setType(MeasureType.HUMIDITY);
+                }
+                entity.setCreatedAt(measuredAt);
+                return entity;
+            }
+            return null;
+        } catch (final SQLException exception) {
+            getLogger().error(exception.getMessage(), exception);
+            return null;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (final SQLException exception) {
+                // empty method
+            }
+        }
     }
 
     @Override
-    public List<Measurement> get(final MeasureType measureType, final long start, final long end) {
+    public List<MeasurementEntity> get(final MeasureType measureType, final long start, final long end) {
         if (measureType == null) {
             throw new IllegalArgumentException("MeasureType is null");
+        }
+
+        String table = "";
+        if (MeasureType.HUMIDITY.equals(measureType)) {
+            table = humidityTable;
+        } else if (MeasureType.TEMPERATURE.equals(measureType)) {
+            table = temperatureTable;
         }
         //TODO
         return null;

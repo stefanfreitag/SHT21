@@ -23,10 +23,16 @@ public final class Measurement {
      * @param type  {@link MeasureType}.
      */
     private Measurement(final float value, final MeasureType type) {
+        this(value, type, new Date());
+
+    }
+
+    private Measurement(final float value, final MeasureType type, final Date createdAt) {
         this.value = value;
         this.type = type;
-        this.createdAt = new Date();
+        this.createdAt = createdAt;
     }
+
 
     /**
      * Create a new {@code Measurement}.
@@ -38,6 +44,17 @@ public final class Measurement {
     public static Measurement create(final float value, final MeasureType type) {
         Objects.requireNonNull(type, MeasureType.class.getCanonicalName() + " is null.");
         return new Measurement(value, type);
+    }
+
+    /**
+     * Create a new {@code Measurement}.
+     *
+     * @param value measured value.
+     * @param type  {@link MeasureType}.
+     * @return A new {@code Measurement}.
+     */
+    public static Measurement create(final float value, final MeasureType type, final Date measuredAt) {
+        return new Measurement(value, type, measuredAt);
     }
 
     /**
@@ -85,11 +102,8 @@ public final class Measurement {
         if (!createdAt.equals(that.createdAt)) {
             return false;
         }
-        if (type != that.type) {
-            return false;
-        }
+        return type == that.type;
 
-        return true;
     }
 
     @Override
