@@ -34,8 +34,8 @@ public final class MeasurementTask extends AbstractTask {
      * The interval between measurements.
      */
     private final long interval;
-    private ScheduledExecutorService service;
-    private List<MeasurementTaskListener> listeners;
+    private final ScheduledExecutorService service;
+    private final List<MeasurementTaskListener> listeners;
     private SHT21 sht21;
 
 
@@ -113,7 +113,13 @@ public final class MeasurementTask extends AbstractTask {
                 '}';
     }
 
-    public boolean addListener(MeasurementTaskListener listener) {
+    /**
+     * Register a {@link MeasurementTaskListener} for receiving updates.
+     *
+     * @param listener A non-null {@link MeasurementTaskListener}.
+     * @return
+     */
+    public boolean addListener(final MeasurementTaskListener listener) {
         if (listener == null) {
             throw new IllegalArgumentException("Listener is null");
         }

@@ -22,10 +22,10 @@ repositories {
 
 dependencies {
     testCompile 'junit:junit:4.12'
-    compile 'com.pi4j:pi4j-core:0.0.5'
-    compile 'org.apache.logging.log4j:log4j-api:2.1'
-    compile 'org.apache.logging.log4j:log4j-core:2.1'
-    compile 'args4j:args4j:2.0.29'
+    compile 'com.pi4j:pi4j-core:1.1'
+    compile 'org.apache.logging.log4j:log4j-api:2.6.2'
+    compile 'org.apache.logging.log4j:log4j-core:2.6.2'
+    compile 'args4j:args4j:2.33'
     compile 'com.google.code.gson:gson:2.7'
 }
 
@@ -76,7 +76,6 @@ publishing {
 
 bintrayUpload.dependsOn(build)
 
-
 bintray {
     if (!project.hasProperty('bintray_user')) {
         project.ext.bintray_user = 'default'
@@ -123,6 +122,7 @@ jar {
     manifest {
         attributes 'Implementation-Title': 'SHT21 Core Library', 'Implementation-Version': version
     }
+    exclude('log4j2.xml')
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

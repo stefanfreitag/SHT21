@@ -53,6 +53,7 @@ public final class Measurement {
      *
      * @param value measured value.
      * @param type  {@link MeasureType}.
+     * @param measuredAt Daten when the measurement was taken.
      * @return A new {@code Measurement}.
      */
     public static Measurement create(final float value, final MeasureType type, final Date measuredAt) {
