@@ -24,8 +24,8 @@ repositories {
 dependencies {
     compile project(':sht21-core')
     compile project(':sht21-mqtt')
-    compile 'org.apache.logging.log4j:log4j-api:2.1'
-    compile 'org.apache.logging.log4j:log4j-core:2.1'
+    compile 'org.apache.logging.log4j:log4j-api:2.6.2'
+    compile 'org.apache.logging.log4j:log4j-core:2.6.2'
     compile 'args4j:args4j:2.0.29'
     testCompile 'junit:junit:4.12'
 }

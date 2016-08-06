@@ -38,9 +38,9 @@ public final class SHT21Impl implements SHT21 {
                 i2CBus = I2CFactory.getInstance(I2CBus.BUS_1);
             }
             this.device = i2CBus.getDevice(address);
-        } catch (IOException exception) {
+        } catch (final I2CFactory.UnsupportedBusNumberException | IOException exception) {
             this.device = null;
-            getLogger().error("IOException: ", exception);
+            getLogger().error(exception.getMessage(), exception);
         }
     }
 
