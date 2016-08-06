@@ -14,7 +14,7 @@ plugins {
     id 'com.jfrog.bintray' version '1.2'
 }
 
-version = '1.0.2-SNAPSHOT'
+version = '1.0.2'
 
 repositories {
     mavenCentral()
@@ -92,12 +92,12 @@ bintray {
     pkg {
         repo = 'maven'
         name = 'SHT21-MQTT'
-        desc = ''
+        desc = 'MQTT Interface to the SHT21 sensor'
         websiteUrl = 'https://github.com/stefanfreitag/SHT21'
         issueTrackerUrl = 'https://github.com/stefanfreitag/SHT21/issues'
         vcsUrl = 'git://github.com/stefanfreitag/SHT21.git'
-        licenses = ['AGPL']
-        labels = ['Java', 'SHT21', 'Export']
+        licenses = ['AGPL-V3']
+        labels = ['Java', 'SHT21', 'MQTT']
         publicDownloadNumbers = true
         version {
             name = project.version
