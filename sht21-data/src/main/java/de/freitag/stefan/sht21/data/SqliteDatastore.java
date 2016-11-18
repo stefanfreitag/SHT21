@@ -17,6 +17,10 @@ import java.util.List;
 public final class SqliteDatastore implements Datastore {
 
     /**
+     * The {@link Logger} for this class.
+     */
+    private static final Logger LOG = LogManager.getLogger(SqliteDatastore.class.getCanonicalName());
+    /**
      * The name of the table storing the temperature measurements.
      */
     private static final String temperatureTable = "temperature";

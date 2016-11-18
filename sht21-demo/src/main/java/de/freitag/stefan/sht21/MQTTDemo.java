@@ -11,9 +11,6 @@ import java.util.concurrent.TimeUnit;
 
 public final class MQTTDemo {
 
-    //@Option(name = "-demoType", usage = "Allowed values: battery, heater, humidity, resolution, temperature", required = true)
-    //private String demoType;
-
     /**
      * Application entry point
      *

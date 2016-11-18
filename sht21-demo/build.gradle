@@ -22,8 +22,9 @@ repositories {
 }
 
 dependencies {
-    compile project(':sht21-core')
     compile project(':sht21-mqtt')
+    compile project(':sht21-core')
+    compile project(':sht21-data')
     compile 'org.apache.logging.log4j:log4j-api:2.6.2'
     compile 'org.apache.logging.log4j:log4j-core:2.6.2'
     compile 'args4j:args4j:2.0.29'
@@ -122,7 +123,7 @@ compileJava {
 }
 
 jar {
-    mainClassName = "demo.SHT21Demo"
+    mainClassName = "de.freitag.stefan.sht21.DatabaseDemo"
     manifest {
         attributes 'Implementation-Title': 'SHT21 Core Library', 'Implementation-Version': version
     }
