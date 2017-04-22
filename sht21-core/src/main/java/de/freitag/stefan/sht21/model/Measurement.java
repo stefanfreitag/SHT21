@@ -29,6 +29,13 @@ public final class Measurement {
 
     }
 
+    /**
+     * Create a new {@code Measurement}.
+     *
+     * @param value measured value.
+     * @param type  {@link MeasureType}.
+     * @param createdAt Time the measurement was taken.
+     */
     private Measurement(final float value, final MeasureType type, final Date createdAt) {
         this.value = value;
         this.type = type;
