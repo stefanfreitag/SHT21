@@ -1,8 +1,11 @@
 package de.freitag.stefan.sht21.model;
 
+import lombok.Getter;
+
 /**
  * The Sensor resolution for temperature and relative humidity.
  */
+@Getter
 public enum Resolution {
 
     /**
@@ -74,17 +77,7 @@ public enum Resolution {
             return RES_11_11BIT;
         }
     }
-
-    /**
-     * Return the byte-encoded resolution.
-     *
-     * @return byte-encoded resolution.
-     */
-    @SuppressWarnings("unused")
-    public byte getResolutionByte() {
-        return this.resolutionByte;
-    }
-
+    
     @Override
     public String toString() {
         return "Resolution{"

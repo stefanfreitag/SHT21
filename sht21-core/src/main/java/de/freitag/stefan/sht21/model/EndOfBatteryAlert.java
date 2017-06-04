@@ -1,22 +1,25 @@
 package de.freitag.stefan.sht21.model;
 
+import lombok.Getter;
+
 /**
- * <p>The end of battery alert is activated when the battery
- * power falls below 2.25V.
- * Value of the status bit:</p>
+ * The end of battery alert is activated when the battery
+ * power falls below 2.25 V.
+ * <p>Value of the status bit:
  * <ul>
  * <li>0: VDD greater than 2.25 Volt</li>
  * <li>1: VDD less than 2.25 Volt</li>
  * </ul>
- * @author Stefan Freitag
+ * </p>
  */
+@Getter
 public enum EndOfBatteryAlert {
     /**
-     * Set End of battery alert.
+     * End of battery alert is set.
      */
     EOB_ALERT_ON((byte) 0x40),
     /**
-     * Cleared End of battery alert.
+     * End of battery alert is not set.
      */
     EOB_ALERT_OFF((byte) 0x00);
     /**
@@ -35,7 +38,7 @@ public enum EndOfBatteryAlert {
     }
 
     /**
-     * Returns the EndOfBattery status (alert on/off) for the given
+     * Returns the end Of battery alert status (alert on/off) for the given
      * {@code eobByte}.
      *
      * @param eobByte Byte to evaluate.
@@ -43,25 +46,14 @@ public enum EndOfBatteryAlert {
      * {@code eobByte}.
      */
     public static EndOfBatteryAlert getEOBAlert(final byte eobByte) {
-        if (EOB_ALERT_OFF.getByte() == (EOB_ALERT_MASK & eobByte)) {
+        if (EOB_ALERT_OFF.getEobByte() == (EOB_ALERT_MASK & eobByte)) {
             return EOB_ALERT_OFF;
         }
-
         return EOB_ALERT_ON;
     }
-
-    /**
-     * Return the byte-encoded alert status.
-     *
-     * @return byte-encoded alert status.
-     */
-    public byte getByte() {
-        return this.eobByte;
-    }
-
+    
     @Override
     public String toString() {
         return this.name();
     }
 }
-

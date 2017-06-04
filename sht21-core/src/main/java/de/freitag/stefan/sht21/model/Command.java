@@ -1,5 +1,7 @@
 package de.freitag.stefan.sht21.model;
 
+import lombok.Getter;
+
 /**
  * <p>Sensor commands, taken from data sheet, table 6.</p>
  * <p>There are two different operation modes to communicate
@@ -11,42 +13,50 @@ package de.freitag.stefan.sht21.model;
  * master mode allows for processing other I2C
  * communication tasks on a bus while the sensor is
  * measuring.</p>
- * @author Stefan Freitag
+ *
  */
+@Getter
 public enum Command {
     /**
-     * Trigger temperature measurement hold master. Byte code 1110’0011.
+     * Trigger temperature measurement hold master.
+     * Byte code <code>1110.0011</code>.
      */
     @SuppressWarnings("unused")
     TRIG_T_MEASUREMENT_HM((byte) 0xe3),
     /**
-     * Trigger humidity measurement hold master. Byte code 1110’0101.
+     * Trigger humidity measurement hold master.
+     * Byte code <code>1110.0101</code>.
      */
     @SuppressWarnings("unused")
     TRIG_RH_MEASUREMENT_HM((byte) 0xe5),
     /**
-     * Trigger temperature measurement no hold master. Byte code 1111’0011.
+     * Trigger temperature measurement no hold master.
+     * Byte code <code>1111.0011</code>.
      */
     TRIG_T_MEASUREMENT_POLL((byte) 0xf3),
     /**
-     * Trigger humidity measurement no hold master. Byte code 1111’0101.
+     * Trigger humidity measurement no hold master.
+     * Byte code <code>1111.0101</code>.
      */
     TRIG_RH_MEASUREMENT_POLL((byte) 0xf5),
     /**
-     * Writing user register. Byte code 1110’0110.
+     * Write to user register.
+     * Byte code <code>1110.0110</code>.
      */
     @SuppressWarnings("unused")
     USER_REG_W((byte) 0xe6),
     /**
-     * Reading user register. Byte code 1110’0111.
+     * Read from user register.
+     * Byte code <code>1110.0111</code>.
      */
     USER_REG_R((byte) 0xe7),
     /**
-     * Soft reset. Byte code 1111’1110.
-     * This command is used for rebooting the sensor system without switching the power off and on
+     * Soft reset.
+     * Byte code <code>1111.1110</code>.
+     * <p>This command is used for rebooting the sensor system without switching the power off and on
      * again. Upon reception of this command, the sensor system reinitialises and starts operation according to the
      * default settings – with the exception of the heater bit in the user register. The soft reset takes less than
-     * 15ms.
+     * 15ms.</p>
      */
     SOFT_RESET((byte) 0xfe);
 
@@ -54,19 +64,11 @@ public enum Command {
 
     /**
      * Create a new {@link Command}.
+     *
      * @param commandByte Command encoded as byte.
      */
     Command(final byte commandByte) {
         this.commandByte = commandByte;
     }
 
-
-    /**
-     * Return the command byte.
-     *
-     * @return The command byte.
-     */
-    public final byte getCommandByte() {
-        return this.commandByte;
-    }
 }

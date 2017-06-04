@@ -4,27 +4,25 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.1'
     }
 }
 
 plugins {
     id 'application'
     id 'maven-publish'
-    id 'com.github.kt3k.coveralls' version '2.0.1'
-    id 'com.jfrog.bintray' version '1.2'
+    id 'com.github.kt3k.coveralls' version '2.8.1'
+    id 'com.jfrog.bintray' version '1.7.3'
 }
 
-version = '1.0.2'
+version = '1.0.3-SNAPSHOT'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile project(':sht21-mqtt')
     compile project(':sht21-core')
-    compile project(':sht21-data')
     compile 'org.apache.logging.log4j:log4j-api:2.6.2'
     compile 'org.apache.logging.log4j:log4j-core:2.6.2'
     compile 'args4j:args4j:2.0.29'
@@ -123,7 +121,7 @@ compileJava {
 }
 
 jar {
-    mainClassName = "de.freitag.stefan.sht21.DatabaseDemo"
+    mainClassName = "de.freitag.stefan.sht21.SHT21Demo"
     manifest {
         attributes 'Implementation-Title': 'SHT21 Core Library', 'Implementation-Version': version
     }

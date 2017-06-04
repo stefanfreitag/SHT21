@@ -1,7 +1,9 @@
 package de.freitag.stefan.sht21.model;
 
 /**
- *
+ * This exception should be used if an unsupported
+ * {@link de.freitag.stefan.sht21.model.MeasureType} was
+ * specified.
  */
 public final class UnsupportedMeasureTypeException extends Exception {
 

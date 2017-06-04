@@ -1,24 +1,25 @@
 package de.freitag.stefan.sht21.task;
 
 import de.freitag.stefan.sht21.SHT21;
-import de.freitag.stefan.sht21.SHT21DummyImpl;
 import de.freitag.stefan.sht21.model.MeasureType;
 import de.freitag.stefan.sht21.model.Measurement;
 import de.freitag.stefan.sht21.model.UnsupportedMeasureTypeException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.*;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
  * A {@link MeasurementTask} contains information about the type of measurement
  * (temperature/ humidity) to make and the desired interval between two measurements.
  */
+@Value
+@Builder
+@Log4j2
+@EqualsAndHashCode(callSuper = true)
+@ToString
 public final class MeasurementTask extends AbstractTask {
 
     /**
@@ -31,109 +32,50 @@ public final class MeasurementTask extends AbstractTask {
     private static final int I2C_ADDRESS = 0x40;
 
     /**
-     * The interval between measurements.
+     * The interval between two measurements.
      */
     private final long interval;
-    private final ScheduledExecutorService service;
-    private final List<MeasurementTaskListener> listeners;
+    private MeasureType measureType;
+    //TODO: Remove from builder
+    @Builder.Default
+    private final List<MeasurementTaskListener> listeners = new CopyOnWriteArrayList<>();
     private SHT21 sht21;
 
 
-    /**
-     * Create a new {@link MeasurementTask}
-     *
-     * @param interval    The interval between two measurements.
-     * @param measureType A non-null {@link MeasureType}.
-     */
-    public MeasurementTask(final long interval, final MeasureType measureType) {
-        super();
-        if (measureType == null) {
-            throw new IllegalArgumentException(MeasureType.class.getSimpleName() + " is null");
-        }
-        if (interval < MINIMUM_INTERVAL) {
-            throw new IllegalArgumentException("Interval must be equal to or greater than " + MINIMUM_INTERVAL + " milliseconds.");
-        }
-
-        this.listeners = new CopyOnWriteArrayList<>();
-        this.interval = interval;
-        this.service = Executors.newScheduledThreadPool(1);
-        this.service.scheduleWithFixedDelay(() -> {
-
+    @Override
+    public void start() {
+        super.start();
+        this.getService().scheduleWithFixedDelay(() -> {
             try {
                 final Measurement measurement = sht21.measurePoll(measureType);
                 this.fireReceivedMeasurement(measurement);
 
             } catch (final UnsupportedMeasureTypeException exception) {
-                getLogger().error(exception.getMessage(), exception);
+                log.error(exception.getMessage(), exception);
             }
         }, 1_000L, this.interval, TimeUnit.MILLISECONDS);
-
-        this.sht21 = new SHT21DummyImpl();
-//        this.sht21 = SHT21Impl.create(I2CBus.BUS_1, I2C_ADDRESS);
-
-    }
-
-    /**
-     * Return the {@link Logger} for this class.
-     *
-     * @return the {@link Logger} for this class.
-     */
-    private static Logger getLogger() {
-        return LogManager.getLogger(MeasurementTask.class.getCanonicalName());
-    }
-
-
-    /**
-     * Return the desired interval between to measurements for this task.
-     *
-     * @return Desired interval in milliseconds.
-     */
-    public long getInterval() {
-        return this.interval;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MeasurementTask that = (MeasurementTask) o;
-        return Objects.equals(getUuid(), that.getUuid());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getUuid());
-    }
-
-    @Override
-    public String toString() {
-        return "MeasurementTask{" +
-                "interval=" + interval +
-                ", uuid=" + getUuid() +
-                '}';
     }
 
     /**
      * Register a {@link MeasurementTaskListener} for receiving updates.
      *
      * @param listener A non-null {@link MeasurementTaskListener}.
-     * @return
+     * @return {@code true} if the listener was added. Otherwise {@code false}
+     * is returned.
      */
-    public boolean addListener(final MeasurementTaskListener listener) {
-        if (listener == null) {
-            throw new IllegalArgumentException("Listener is null");
-        }
-        if (this.listeners.contains(listener)) {
-            return false;
-        }
-        return this.listeners.add(listener);
+    public boolean addListener(@NonNull final MeasurementTaskListener listener) {
+        return !this.listeners.contains(listener) && this.listeners.add(listener);
     }
 
-    private void fireReceivedMeasurement(final Measurement measurement) {
-        assert measurement != null;
-        for (final MeasurementTaskListener listener : this.listeners) {
-            listener.onReceived(measurement);
-        }
+    /**
+     * Notify registered listeners about a {@link Measurement}.
+     *
+     * @param measurement A non-null {@link Measurement}.
+     */
+    private void fireReceivedMeasurement(@NonNull final Measurement measurement) {
+        this.listeners.forEach(
+                listener -> listener.onReceived(measurement)
+        );
     }
 
 }
