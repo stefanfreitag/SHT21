@@ -15,9 +15,9 @@ import java.time.ZoneId;
  * <li>The creation date and time in UTC</li>
  * </ul>
  */
+@Builder
 @Value
 @Getter
-@Builder
 public class Measurement {
     @Builder.Default
     private final LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("UTC"));
