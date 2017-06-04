@@ -5,8 +5,10 @@ import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
 import de.freitag.stefan.sht21.model.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.NonNull;
+import lombok.extern.log4j.Log4j2;
+import tec.units.ri.quantity.Quantities;
+import tec.units.ri.unit.Units;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -16,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Implementation of {@link de.freitag.stefan.sht21.SHT21}.
  */
+@Log4j2
 public final class SHT21Impl implements SHT21 {
 
     /**
@@ -40,7 +43,7 @@ public final class SHT21Impl implements SHT21 {
             this.device = i2CBus.getDevice(address);
         } catch (final I2CFactory.UnsupportedBusNumberException | IOException exception) {
             this.device = null;
-            getLogger().error(exception.getMessage(), exception);
+            log.error(exception.getMessage(), exception);
         }
     }
 
@@ -75,15 +78,6 @@ public final class SHT21Impl implements SHT21 {
         } catch (InterruptedException exception) {
             Thread.currentThread().interrupt();
         }
-    }
-
-    /**
-     * Return the {@link Logger} for this class.
-     *
-     * @return the {@link Logger} for this class.
-     */
-    private static Logger getLogger() {
-        return LogManager.getLogger(SHT21Impl.class.getCanonicalName());
     }
 
     /**
@@ -143,10 +137,10 @@ public final class SHT21Impl implements SHT21 {
         }
 
         if ((byte) crc == checksum) {
-            getLogger().debug("Checksum matches");
+            log.debug("Checksum matches");
             return true;
         } else {
-            getLogger().debug("Checksum does not match. Expected : " + checksum + ". Calculated: " + (byte) crc);
+            log.debug("Checksum does not match. Expected : " + checksum + ". Calculated: " + (byte) crc);
             return false;
         }
     }
@@ -154,39 +148,38 @@ public final class SHT21Impl implements SHT21 {
     /**
      * Performs a reset.
      */
-    void softReset() {
+    private void softReset() {
         try {
-            getLogger().debug("Writing byte " + String.format("0x%02X", Command.SOFT_RESET.getCommandByte()) + " to device " + this.device);
+            log.debug("Writing byte " + String.format("0x%02X", Command.SOFT_RESET.getCommandByte()) + " to device " + this.device);
             this.device.write(Command.SOFT_RESET.getCommandByte());
         } catch (final IOException exception) {
-            getLogger().error("SoftReset failed with an IOException: ", exception);
+            log.error("SoftReset failed with an IOException: ", exception);
         }
         delay(50);
-        getLogger().trace("Finished softReset()");
+        log.trace("Finished softReset()");
     }
 
     @Override
     public Resolution getResolution() {
         this.softReset();
         try {
-            getLogger().debug("Writing byte " + String.format("0x%02X", Command.USER_REG_R.getCommandByte()) + " to device " + this.device);
+            log.debug("Writing byte " + String.format("0x%02X", Command.USER_REG_R.getCommandByte()) + " to device " + this.device);
             this.device.write(Command.USER_REG_R.getCommandByte());
             delay(100);
             final byte[] bytes = new byte[1];
             this.device.read(bytes, 0, 1);
             return Resolution.getResolution(bytes[0]);
         } catch (final IOException exception) {
-            getLogger().error("Getting resolution failed because of an IOException: ", exception);
+            log.error("Getting resolution failed because of an IOException: ", exception);
         }
         return null;
     }
 
     @Override
     public EndOfBatteryAlert getEndOfBatteryAlert() {
-        getLogger().debug("Starting getEndOfBatteryAlert()");
         this.softReset();
         try {
-            getLogger().trace("Writing byte " + String.format("0x%02X", Command.USER_REG_R.getCommandByte()) + " to device " + this.device);
+            log.trace("Writing byte " + String.format("0x%02X", Command.USER_REG_R.getCommandByte()) + " to device " + this.device);
             this.device.write(Command.USER_REG_R.getCommandByte());
             delay(100);
 
@@ -194,7 +187,7 @@ public final class SHT21Impl implements SHT21 {
             this.device.read(bytes, 0, 1);
             return EndOfBatteryAlert.getEOBAlert(bytes[0]);
         } catch (final IOException exception) {
-            getLogger().error("getEOBAlert() failed.", exception);
+            log.error("getEOBAlert() failed.", exception);
         }
         return null;
 
@@ -204,7 +197,7 @@ public final class SHT21Impl implements SHT21 {
     public HeaterStatus getHeaterStatus() {
         this.softReset();
         try {
-            getLogger().debug("Writing byte " + String.format("0x%02X", Command.USER_REG_R.getCommandByte()) + " to device " + this.device);
+            log.debug("Writing byte " + String.format("0x%02X", Command.USER_REG_R.getCommandByte()) + " to device " + this.device);
             this.device.write(Command.USER_REG_R.getCommandByte());
             delay(100);
 
@@ -212,19 +205,19 @@ public final class SHT21Impl implements SHT21 {
             this.device.read(bytes, 0, 1);
             return HeaterStatus.getStatus(bytes[0]);
         } catch (final IOException exception) {
-            getLogger().error("Getting heater status failed. IOException: ", exception);
+            log.error("Getting heater status failed. IOException: ", exception);
         }
         return null;
     }
 
     @Override
-    public Measurement measurePoll(final MeasureType measureType) throws UnsupportedMeasureTypeException {
+    public Measurement measurePoll(@NonNull  final MeasureType measureType) throws UnsupportedMeasureTypeException {
         switch (measureType) {
             case HUMIDITY: {
-                return Measurement.create(this.measurePollHumidity(), MeasureType.HUMIDITY);
+                return Measurement.builder().value(Quantities.getQuantity(this.measurePollHumidity(), Units.PERCENT)).build();
             }
             case TEMPERATURE: {
-                return Measurement.create(this.measurePollTemperature(), MeasureType.TEMPERATURE);
+                return Measurement.builder().value(Quantities.getQuantity(this.measurePollTemperature(), Units.CELSIUS)).build();
             }
             default:
                 throw new UnsupportedMeasureTypeException("MeasureType not supported: " + measureType);
@@ -250,7 +243,7 @@ public final class SHT21Impl implements SHT21 {
             }
 
         } catch (final IOException exception) {
-            getLogger().error("Temperature measurement failed because of an IOException: ", exception);
+            log.error("Temperature measurement failed because of an IOException: ", exception);
             return Float.MIN_VALUE;
         }
 
@@ -276,7 +269,7 @@ public final class SHT21Impl implements SHT21 {
             }
 
         } catch (final IOException exception) {
-            getLogger().error("Humidity measurement failed because of an IOException: ", exception);
+            log.error("Humidity measurement failed because of an IOException: ", exception);
             return Float.MIN_VALUE;
         }
     }

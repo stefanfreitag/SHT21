@@ -1,28 +1,33 @@
-package demo;
+package de.freitag.stefan.sht21;
 
 import com.pi4j.io.i2c.I2CBus;
-import de.freitag.stefan.sht21.SHT21;
-import de.freitag.stefan.sht21.SHT21Impl;
-import de.freitag.stefan.sht21.model.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import de.freitag.stefan.sht21.model.MeasureType;
+import de.freitag.stefan.sht21.model.Measurement;
+import de.freitag.stefan.sht21.model.UnsupportedMeasureTypeException;
+import de.freitag.stefan.sht21.task.MeasurementTask;
+import de.freitag.stefan.sht21.task.MeasurementTaskListener;
+import lombok.NonNull;
+import lombok.extern.log4j.Log4j2;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 import java.util.concurrent.TimeUnit;
 
-public final class SHT21Demo {
+@Log4j2
+public final class SHT21Demo implements MeasurementTaskListener {
 
     /**
      * Device address.
      */
     private static final int I2C_ADDRESS = 0x40;
 
-    private SHT21 sht21;
 
-    @Option(name = "-demoType", usage = "Allowed values: battery, heater, humidity, resolution, temperature", required = true)
-    private String demoType;
+    @Option(name = "-type", usage = "Allowed values: humidity, temperature", required = true)
+    private String type;
+
+    @Option(name = "-implementation", usage = "Allowed values: dummy, real", required = true)
+    private String implementation;
 
     /**
      * Application entry point
@@ -35,15 +40,6 @@ public final class SHT21Demo {
         System.exit(0);
     }
 
-    /**
-     * Return the {@link Logger} for this class.
-     *
-     * @return the {@link Logger} for this class.
-     */
-    private static Logger getLogger() {
-        return LogManager.getLogger(SHT21Demo.class.getCanonicalName());
-    }
-
     private void doMain(final String[] args) {
         final CmdLineParser parser = new CmdLineParser(this);
         try {
@@ -53,48 +49,56 @@ public final class SHT21Demo {
             parser.printUsage(System.err);
             return;
         }
-
-        this.sht21 = SHT21Impl.create(I2CBus.BUS_1, I2C_ADDRESS);
-
-        while (true) {
-            try {
-                this.execute();
-                TimeUnit.SECONDS.sleep(5);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+        try {
+            execute(type, implementation);
+            while (true) {
+                try {
+                    TimeUnit.SECONDS.sleep(5000L);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
+        } catch (final UnsupportedMeasureTypeException exception) {
+            log.error(exception.getMessage(), exception);
         }
+
     }
 
-    private void execute() {
-        if ("battery".equalsIgnoreCase(demoType)) {
-            final EndOfBatteryAlert eobAlert = sht21.getEndOfBatteryAlert();
-            getLogger().info("End of battery alert: " + eobAlert);
-        } else if ("humidity".equalsIgnoreCase(demoType)) {
-            final Measurement measurement;
-            try {
-                measurement = sht21.measurePoll(MeasureType.HUMIDITY);
-                getLogger().info("Relative Humidity [%]: " + String.format("%.2f", measurement.getValue()));
-            } catch (final UnsupportedMeasureTypeException exception) {
-                getLogger().error(exception.getMessage(), exception);
-            }
+    private void execute(@NonNull String type, @NonNull String implementation) throws UnsupportedMeasureTypeException {
+        MeasureType measureType;
+        if ("humidity".equalsIgnoreCase(type)) {
+            measureType = MeasureType.HUMIDITY;
 
-        } else if ("resolution".equalsIgnoreCase(demoType)) {
-            final Resolution resolution = sht21.getResolution();
-            getLogger().info("Resolution: " + resolution);
-        } else if ("heater".equalsIgnoreCase(demoType)) {
-            final HeaterStatus eobAlert = sht21.getHeaterStatus();
-            getLogger().info("Heater status: " + eobAlert);
-        } else if ("temperature".equalsIgnoreCase(demoType)) {
-            final Measurement measurement;
-            try {
-                measurement = sht21.measurePoll(MeasureType.TEMPERATURE);
-                getLogger().info("Measured temperature [deg C]: " + String.format("%.2f", measurement.getValue()));
-            } catch (final UnsupportedMeasureTypeException exception) {
-                getLogger().error(exception.getMessage(), exception);
-            }
-
+        } else if ("temperature".equalsIgnoreCase(type)) {
+            measureType = MeasureType.TEMPERATURE;
+        } else {
+            throw new UnsupportedMeasureTypeException("Measure type '" + type + "' is not supported.");
         }
+        SHT21 sht21;
+
+        if ("dummy".equalsIgnoreCase(implementation)) {
+            sht21 = new SHT21DummyImpl();
+
+        } else if ("real".equalsIgnoreCase(implementation)) {
+            sht21 = SHT21Impl.create(I2CBus.BUS_1, I2C_ADDRESS);
+        } else {
+            throw new RuntimeException("Unsupported implementation: "+ implementation);
+        }
+
+        final MeasurementTask task = MeasurementTask.builder().sht21(sht21).measureType(measureType)
+                .interval(5_000L).build();
+        task.addListener(this);
+        task.start();
     }
 
+    /**
+     * Called whenever a new measurement has been
+     * received from the sensor.
+     *
+     * @param measurement
+     */
+    @Override
+    public void onReceived(@NonNull Measurement measurement) {
+        log.info(measurement);
+    }
 }

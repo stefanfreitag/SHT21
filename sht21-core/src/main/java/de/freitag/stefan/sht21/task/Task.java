@@ -1,6 +1,20 @@
 package de.freitag.stefan.sht21.task;
 
+import java.util.UUID;
+
+/**
+ * A piece of work that can be started and also cancelled.
+ * It has to provide a unique identifier.
+ */
 public interface Task {
+
+    /**
+     * Return the unique identifier for the task.
+     *
+     * @return A unique identifier for the task.
+     */
+    UUID getIdentifier();
+
     /**
      * Start the task.
      */

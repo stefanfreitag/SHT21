@@ -1,10 +1,14 @@
 package de.freitag.stefan.sht21.model;
 
 
+import lombok.Getter;
+
 /**
  * The heater is intended to be used for functionality diagnosis – relative humidity drops upon rising
- * temperature. The heater consumes about 5.5mW and provides a temperature increase of about 0.5 – 1.5°C.
+ * temperature.
+ * <p>The heater consumes about 5.5mW and provides a temperature increase of about 0.5 – 1.5°C.</p>
  */
+@Getter
 public enum HeaterStatus {
     /**
      * Enabled heater.
@@ -30,7 +34,7 @@ public enum HeaterStatus {
     }
 
     public static HeaterStatus getStatus(final byte heaterByte) {
-        if ((heaterByte & MASK) == HEATER_OFF.getByte()) {
+        if ((heaterByte & MASK) == HEATER_OFF.getHeaterByte()) {
             return HEATER_OFF;
         }
         return HEATER_ON;
@@ -39,10 +43,6 @@ public enum HeaterStatus {
     @Override
     public String toString() {
         return this.name();
-    }
-
-    public byte getByte() {
-        return this.heaterByte;
     }
 
 }

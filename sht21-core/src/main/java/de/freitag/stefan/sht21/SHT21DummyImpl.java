@@ -1,6 +1,9 @@
 package de.freitag.stefan.sht21;
 
 import de.freitag.stefan.sht21.model.*;
+import lombok.NonNull;
+import tec.units.ri.quantity.Quantities;
+import tec.units.ri.unit.Units;
 
 import java.util.Random;
 
@@ -9,8 +12,10 @@ import java.util.Random;
  */
 public final class SHT21DummyImpl implements SHT21 {
 
+    /**
+     * Used to generate random measurement values.
+     */
     private static final Random RAND = new Random();
-
 
     /**
      * Return the present resolution (in bits) for temperature and humidity measurement.
@@ -56,10 +61,13 @@ public final class SHT21DummyImpl implements SHT21 {
      * @return A {@link de.freitag.stefan.sht21.model.Measurement}.
      */
     @Override
-    public Measurement measurePoll(final MeasureType measureType) {
-        if (measureType == null) {
-            throw new IllegalArgumentException(MeasureType.class.getSimpleName() + " is null");
+    public Measurement measurePoll(@NonNull final MeasureType measureType) {
+        if (MeasureType.HUMIDITY.equals(measureType)) {
+            return Measurement.builder().value(Quantities.getQuantity(Math.abs(RAND.nextFloat()), Units.PERCENT)).build();
+        }   else  if (MeasureType.TEMPERATURE.equals(measureType)) {
+            return Measurement.builder().value(Quantities.getQuantity(Math.abs(RAND.nextFloat()), Units.CELSIUS)).build();
+        } else {
+            throw new IllegalArgumentException("Unsupported Measurement type: " + measureType);
         }
-        return Measurement.create(Math.abs(RAND.nextFloat()), measureType);
     }
 }
