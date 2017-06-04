@@ -11,26 +11,16 @@ import static org.junit.Assert.*;
  * Test class for {@link MeasurementTask}
  */
 public final class MeasurementTaskTest {
-
-    @Test(expected = IllegalArgumentException.class)
-    public void constructorWithIntervalLessThanMinimumThrowsIllegalArgumentException() {
-        new MeasurementTask(1_000L, MeasureType.TEMPERATURE);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void constructorWithNullMeasureTypeThrowsIllegalArgumentException() {
-        new MeasurementTask(10_000L, null);
-    }
-
+    
     @Test
     public void getInterval() {
-        final MeasurementTask task = new MeasurementTask(10_000L, MeasureType.TEMPERATURE);
+        final MeasurementTask task = MeasurementTask.builder().measureType(MeasureType.HUMIDITY).interval(10_000L).build();
         assertEquals(10_000L, task.getInterval());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void addListenerWithNullThrowsIllegalArgumentException() {
-        final MeasurementTask task = new MeasurementTask(10_000L, MeasureType.TEMPERATURE);
+    @Test(expected = NullPointerException.class)
+    public void addListenerWithNullThrowsNullPointerException() {
+        final MeasurementTask task = MeasurementTask.builder().measureType(MeasureType.HUMIDITY).interval(10_000L).build();
         task.addListener(null);
     }
 
@@ -39,7 +29,7 @@ public final class MeasurementTaskTest {
         final MeasurementTaskListener listener = measurement -> {
             // empty method
         };
-        final MeasurementTask task = new MeasurementTask(10_000L, MeasureType.TEMPERATURE);
+        final MeasurementTask task = MeasurementTask.builder().measureType(MeasureType.HUMIDITY).interval(10_000L).build();
 
         assertTrue(task.addListener(listener));
         assertFalse(task.addListener(listener));
@@ -47,26 +37,27 @@ public final class MeasurementTaskTest {
 
     @Test
     public void isStartedReturnsFalseForNotStartedTask() {
-        final MeasurementTask task = new MeasurementTask(10_000L, MeasureType.TEMPERATURE);
+        final MeasurementTask task = MeasurementTask.builder().measureType(MeasureType.HUMIDITY).interval(10_000L).build();
         assertFalse(task.isStarted());
     }
 
     @Test
     public void isStartedReturnsTrueForStartedTask() {
-        final MeasurementTask task = new MeasurementTask(10_000L, MeasureType.TEMPERATURE);
+        final MeasurementTask task = MeasurementTask.builder().measureType(MeasureType.HUMIDITY).interval(10_000L).build();
         task.start();
+
         assertTrue(task.isStarted());
     }
 
     @Test
     public void isCanceledReturnsFalseForNotCanceledTask() {
-        final MeasurementTask task = new MeasurementTask(10_000L, MeasureType.TEMPERATURE);
+        final MeasurementTask task = MeasurementTask.builder().measureType(MeasureType.HUMIDITY).interval(10_000L).build();
         assertFalse(task.isCanceled());
     }
 
     @Test
     public void isCanceledReturnsTrueForCanceledTask() {
-        final MeasurementTask task = new MeasurementTask(10_000L, MeasureType.TEMPERATURE);
+        final MeasurementTask task = MeasurementTask.builder().measureType(MeasureType.HUMIDITY).interval(10_000L).build();
         task.start();
         task.cancel();
         assertTrue(task.isCanceled());

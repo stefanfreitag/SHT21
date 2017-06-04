@@ -1,7 +1,3 @@
 rootProject.name = 'SHT21 Library'
 include 'sht21-core'
-include 'sht21-data'
 include 'sht21-demo'
-include 'sht21-export'
-include 'sht21-mqtt'
-include 'sht21-rest'

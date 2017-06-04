@@ -18,13 +18,14 @@ public final class EndOfBatteryAlertTest {
 
     @Test
     public void toStringReturnsExpectedValue() {
+        System.out.println(EndOfBatteryAlert.EOB_ALERT_ON.toString());
         assertTrue("EOB_ALERT_ON".equalsIgnoreCase(EndOfBatteryAlert.EOB_ALERT_ON.toString()));
         assertTrue("EOB_ALERT_OFF".equalsIgnoreCase(EndOfBatteryAlert.EOB_ALERT_OFF.toString()));
     }
 
     @Test
     public void getByteReturnsExpectedValue() {
-        assertEquals(0x40, EndOfBatteryAlert.EOB_ALERT_ON.getByte());
-        assertEquals(0x00, EndOfBatteryAlert.EOB_ALERT_OFF.getByte());
+        assertEquals(0x40, EndOfBatteryAlert.EOB_ALERT_ON.getEobByte());
+        assertEquals(0x00, EndOfBatteryAlert.EOB_ALERT_OFF.getEobByte());
     }
 }
