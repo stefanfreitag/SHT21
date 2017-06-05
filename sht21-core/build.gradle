@@ -31,6 +31,12 @@ dependencies {
     compile 'com.google.code.gson:gson:2.7'
 }
 
+tasks.withType(JavaCompile) {
+    options.fork = true
+    options.incremental = true
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation" << "-Xdiags:verbose"
+}
+
 def pomConfig = {
     inceptionYear '2014'
     licenses {

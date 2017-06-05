@@ -188,5 +188,3 @@ jacocoTestReport {
         html.enabled = true
     }
 }
-
-
