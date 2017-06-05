@@ -49,8 +49,8 @@ public final class SHT21DummyImplTest {
         assertNotNull(sht21.measurePoll(MeasureType.TEMPERATURE));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void measurePollWithNullMeasureTypeThrowsIllegalArgumentException() throws UnsupportedMeasureTypeException {
+    @Test(expected = NullPointerException.class)
+    public void measurePollWithNullMeasureTypeThrowsNullPointerException() throws UnsupportedMeasureTypeException {
         sht21.measurePoll(null);
     }
 }
