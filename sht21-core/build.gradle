@@ -14,7 +14,7 @@ plugins {
     id 'com.jfrog.bintray' version '1.7.3'
 }
 
-version = '1.0.3'
+version = '1.0.4-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -29,6 +29,12 @@ dependencies {
     compile 'tec.units:unit-ri:1.0.2'
     compile 'args4j:args4j:2.33'
     compile 'com.google.code.gson:gson:2.7'
+}
+
+tasks.withType(JavaCompile) {
+    options.fork = true
+    options.incremental = true
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation" << "-Xdiags:verbose"
 }
 
 def pomConfig = {
