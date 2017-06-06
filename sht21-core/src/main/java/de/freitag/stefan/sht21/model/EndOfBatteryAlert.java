@@ -5,12 +5,11 @@ import lombok.Getter;
 /**
  * The end of battery alert is activated when the battery
  * power falls below 2.25 V.
- * <p>Value of the status bit:
+ * Value of the status bit:
  * <ul>
  * <li>0: VDD greater than 2.25 Volt</li>
  * <li>1: VDD less than 2.25 Volt</li>
  * </ul>
- * </p>
  */
 @Getter
 public enum EndOfBatteryAlert {
