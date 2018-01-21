@@ -4,14 +4,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
 
-import javax.measure.Quantity;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 /**
  * A {@code Measurement} consists of
  * <ul>
- * <li>The measured value as {@link Quantity}</li>
+ * <li>The measured value</li>
  * <li>The creation date and time in UTC</li>
  * </ul>
  */
@@ -21,5 +21,6 @@ import java.time.ZoneId;
 public class Measurement {
     @Builder.Default
     private final LocalDateTime createdAt = LocalDateTime.now(ZoneId.of("UTC"));
-    private final Quantity<?> value;
+    private final BigDecimal value;
+    private final String unit;
 }

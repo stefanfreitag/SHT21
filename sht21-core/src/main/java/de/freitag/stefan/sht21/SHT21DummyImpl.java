@@ -2,9 +2,8 @@ package de.freitag.stefan.sht21;
 
 import de.freitag.stefan.sht21.model.*;
 import lombok.NonNull;
-import tec.units.ri.quantity.Quantities;
-import tec.units.ri.unit.Units;
 
+import java.math.BigDecimal;
 import java.util.Random;
 
 /**
@@ -63,9 +62,9 @@ public final class SHT21DummyImpl implements SHT21 {
     @Override
     public Measurement measurePoll(@NonNull final MeasureType measureType) {
         if (MeasureType.HUMIDITY.equals(measureType)) {
-            return Measurement.builder().value(Quantities.getQuantity(Math.abs(RAND.nextFloat()), Units.PERCENT)).build();
+            return Measurement.builder().value(BigDecimal.valueOf(Math.abs(RAND.nextFloat()))).unit("%RH").build();
         }   else  if (MeasureType.TEMPERATURE.equals(measureType)) {
-            return Measurement.builder().value(Quantities.getQuantity(Math.abs(RAND.nextFloat()), Units.CELSIUS)).build();
+            return Measurement.builder().value(BigDecimal.valueOf(Math.abs(RAND.nextFloat()))).unit("CELSIUS").build();
         } else {
             throw new IllegalArgumentException("Unsupported Measurement type: " + measureType);
         }
