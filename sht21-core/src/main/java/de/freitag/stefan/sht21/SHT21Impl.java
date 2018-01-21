@@ -7,10 +7,9 @@ import com.pi4j.io.i2c.I2CFactory;
 import de.freitag.stefan.sht21.model.*;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
-import tec.units.ri.quantity.Quantities;
-import tec.units.ri.unit.Units;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.TimeUnit;
@@ -214,10 +213,10 @@ public final class SHT21Impl implements SHT21 {
     public Measurement measurePoll(@NonNull  final MeasureType measureType) throws UnsupportedMeasureTypeException {
         switch (measureType) {
             case HUMIDITY: {
-                return Measurement.builder().value(Quantities.getQuantity(this.measurePollHumidity(), Units.PERCENT)).build();
+                return Measurement.builder().value(BigDecimal.valueOf(this.measurePollHumidity())).unit("%RH").build();
             }
             case TEMPERATURE: {
-                return Measurement.builder().value(Quantities.getQuantity(this.measurePollTemperature(), Units.CELSIUS)).build();
+                return Measurement.builder().value(BigDecimal.valueOf(this.measurePollTemperature())).unit("Celsius").build();
             }
             default:
                 throw new UnsupportedMeasureTypeException("MeasureType not supported: " + measureType);
