@@ -14,20 +14,17 @@ plugins {
     id 'com.jfrog.bintray' version '1.7.3'
 }
 
-version = '1.0.4'
-
-repositories {
-    mavenCentral()
-}
+version = '1.0.5-SNAPSHOT'
 
 dependencies {
-    testCompile 'junit:junit:4.12'
     compile 'com.pi4j:pi4j-core:1.1'
-    compile 'org.apache.logging.log4j:log4j-api:2.8.2'
-    compile 'org.apache.logging.log4j:log4j-core:2.8.2'
-    compile 'org.projectlombok:lombok:1.16.16'
-    compile 'args4j:args4j:2.33'
-    compile 'com.google.code.gson:gson:2.7'
+
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.2'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.2'
+    testCompileOnly 'org.apiguardian:apiguardian-api:1.0.0'
+
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.10.0'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.10.0'
 }
 
 tasks.withType(JavaCompile) {
@@ -145,12 +142,6 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 artifacts {
     archives sourcesJar
     archives javadocJar
-}
-
-findbugs {
-    ignoreFailures = true
-    reportsDir = file("$project.buildDir/reports/findbugs")
-    effort = "max"
 }
 
 tasks.withType(FindBugs) {

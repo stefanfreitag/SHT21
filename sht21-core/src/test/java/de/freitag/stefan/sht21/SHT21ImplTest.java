@@ -1,30 +1,32 @@
 
 package de.freitag.stefan.sht21;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test class for {@link SHT21Impl}.
  * @author Stefan Freitag
  */
-public final class SHT21ImplTest {
+final class SHT21ImplTest {
 
-    @Test(expected = IllegalArgumentException.class)
-    public void createWithInvalidBusNrThrowsIllegalArgumentException() {
-        SHT21Impl.create(-1, 0x40);
+    @Test
+    void createWithInvalidBusNrThrowsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> SHT21Impl.create(-1, 0x40));
     }
 
     /**
      * Byte values taken from data sheet.
      */
     @Test
-    public void calcRHReturnsExpectedValues() {
+    void calcRHReturnsExpectedValues() {
         final ByteBuffer buffer = ByteBuffer.allocate(2);
         buffer.order(ByteOrder.BIG_ENDIAN);
         buffer.put((byte) 0x63);
@@ -33,7 +35,7 @@ public final class SHT21ImplTest {
     }
 
     @Test
-    public void calcRHReturnsSecondExpectedValues() {
+    void calcRHReturnsSecondExpectedValues() {
         final ByteBuffer buffer = ByteBuffer.allocate(2);
         buffer.order(ByteOrder.BIG_ENDIAN);
         buffer.put((byte) 0x8D);
@@ -43,7 +45,7 @@ public final class SHT21ImplTest {
 
 
     @Test
-    public void calcTemperatureCReturnsExpectedValues() {
+    void calcTemperatureCReturnsExpectedValues() {
         final ByteBuffer buffer = ByteBuffer.allocate(2);
         buffer.order(ByteOrder.BIG_ENDIAN);
         buffer.put((byte) 0x63);
@@ -53,7 +55,7 @@ public final class SHT21ImplTest {
 
 
     @Test
-    public void checkCrCReturnsExpectedResultWithExample1() {
+    void checkCrCReturnsExpectedResultWithExample1() {
         final byte[] bytes = new byte[3];
         bytes[0] = (byte) 0x63;
         bytes[1] = 0x52;
@@ -62,7 +64,7 @@ public final class SHT21ImplTest {
     }
 
     @Test
-    public void checkCrCReturnsExpectedResultWithExample2() {
+    void checkCrCReturnsExpectedResultWithExample2() {
         final byte[] bytes = new byte[3];
         bytes[0] = (byte) 0x61;
         bytes[1] = (byte) 0xD4;

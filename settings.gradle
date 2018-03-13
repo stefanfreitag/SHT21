@@ -1,4 +1,5 @@
 rootProject.name = 'SHT21 Library'
+include 'sht21-backend'
 include 'sht21-core'
 include 'sht21-demo'
 include 'sht21-restclient'

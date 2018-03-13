@@ -1,6 +1,10 @@
 package de.freitag.stefan.sht21;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.ObjectMapper;
@@ -14,15 +18,14 @@ import de.freitag.stefan.sht21.task.MeasurementTask;
 import de.freitag.stefan.sht21.task.MeasurementTaskListener;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.Option;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.concurrent.Future;
+import java.time.LocalDateTime;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import static com.mashape.unirest.http.Unirest.*;
+import static com.mashape.unirest.http.Unirest.post;
 
 @Log4j2
 public final class SHT21Demo implements MeasurementTaskListener {
@@ -32,12 +35,50 @@ public final class SHT21Demo implements MeasurementTaskListener {
      */
     private static final int I2C_ADDRESS = 0x40;
 
+    private String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
 
-    @Option(name = "-type", usage = "Allowed values: humidity, temperature", required = true)
+    private String appConfigPath = rootPath + "app.properties";
+
+    private String endpoint;
+    // Measurement interval in seconds.
+    private long interval;
+
     private String type;
 
-    @Option(name = "-implementation", usage = "Allowed values: dummy, real", required = true)
     private String implementation;
+
+
+    private String uuid;
+
+
+    private Properties appProps = new Properties();
+
+
+
+
+    public SHT21Demo() {
+        loadProperties();
+    }
+
+    private void loadProperties() {
+        try {
+            appProps.load(new FileInputStream(appConfigPath));
+            endpoint = appProps.getProperty("sht21.endpoint");
+            log.info("Found endpoint in configuration: " + endpoint);
+            interval = Long.valueOf(appProps.getProperty("sht21.measurement.interval"));
+            log.info("Found interval in seconds: " + interval);
+
+            type = appProps.getProperty("sht21.measurement.type");
+            implementation = appProps.getProperty("sht21.implementation");
+            uuid=appProps.getProperty("sht21.uuid");
+        } catch (IOException e) {
+            log.error(e.getMessage(),e);
+        }
+    }
+
+
+
+
 
     /**
      * Application entry point
@@ -47,11 +88,11 @@ public final class SHT21Demo implements MeasurementTaskListener {
     public static void main(final String[] args) {
         final SHT21Demo instance = new SHT21Demo();
 
+        com.fasterxml.jackson.databind.ObjectMapper jacksonObjectMapper
+                = new com.fasterxml.jackson.databind.ObjectMapper().registerModule(new JavaTimeModule()).configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
 
-        Unirest.setObjectMapper(new ObjectMapper() {
-            private com.fasterxml.jackson.databind.ObjectMapper jacksonObjectMapper
-                    = new com.fasterxml.jackson.databind.ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper() {
 
             public <T> T readValue(String value, Class<T> valueType) {
                 try {
@@ -68,7 +109,8 @@ public final class SHT21Demo implements MeasurementTaskListener {
                     throw new RuntimeException(e);
                 }
             }
-        });
+        };
+        Unirest.setObjectMapper(objectMapper);
 
 
         instance.doMain(args);
@@ -76,15 +118,8 @@ public final class SHT21Demo implements MeasurementTaskListener {
     }
 
     private void doMain(final String[] args) {
-        final CmdLineParser parser = new CmdLineParser(this);
         try {
-            parser.parseArgument(args);
-        } catch (CmdLineException exception) {
-            System.err.println(exception.getMessage());
-            parser.printUsage(System.err);
-            return;
-        }
-        try {
+
             execute(type, implementation);
             while (true) {
                 try {
@@ -117,11 +152,11 @@ public final class SHT21Demo implements MeasurementTaskListener {
         } else if ("real".equalsIgnoreCase(implementation)) {
             sht21 = SHT21Impl.create(I2CBus.BUS_1, I2C_ADDRESS);
         } else {
-            throw new RuntimeException("Unsupported implementation: "+ implementation);
+            throw new RuntimeException("Unsupported implementation: " + implementation);
         }
 
         final MeasurementTask task = MeasurementTask.builder().sht21(sht21).measureType(measureType)
-                .interval(5_000L).build();
+                .interval(TimeUnit.SECONDS.toMillis(interval)).build();
         task.addListener(this);
         task.start();
     }
@@ -134,18 +169,34 @@ public final class SHT21Demo implements MeasurementTaskListener {
      */
     @Override
     public void onReceived(@NonNull Measurement measurement) {
-        log.info(measurement);
-
-
-            log.info("Before sending");
         try {
-            post("http://localhost:8080/measurements/30/")
+            String fullEndpoint = endpoint + "/sensors/" + uuid + "/" + "measurements/";
+
+            HttpResponse<JsonNode> httpResponse = post(fullEndpoint)
                     .header("Content-Type", "application/json")
-                 .body(measurement).asJson();
+                    .body(measurement).asJson();
+            log.info("Storing measurement" + measurement);
+
         } catch (UnirestException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
 
 
+    }
+
+
+}
+
+class LocalDateTimeSerializer extends JsonSerializer<LocalDateTime> {
+    @Override
+    public void serialize(LocalDateTime arg0, JsonGenerator arg1, SerializerProvider arg2) throws IOException, JsonProcessingException {
+        arg1.writeString(arg0.toString());
+    }
+}
+
+class LocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
+    @Override
+    public LocalDateTime deserialize(JsonParser arg0, DeserializationContext arg1) throws IOException, JsonProcessingException {
+        return LocalDateTime.parse(arg0.getText());
     }
 }

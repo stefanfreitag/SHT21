@@ -1,0 +1,153 @@
+swagger: '2.0'
+info:
+  version: 0.0.1
+  title: SHT21 Backend ReST API
+  description: Bla bla bla
+schemes:
+  - http
+host: 'localhost:8081'
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /sensors:
+    get:
+      operationId: ListSensors
+      produces:
+        - application/json
+      description: |
+        Returns an array of all registered sensors.
+      tags:
+        - Sensor
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Sensors'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: Create a new sensor.
+      tags:
+        - Sensor
+      parameters:
+        - in: body
+          name: body
+          description: The sensor to add.
+          required: true
+          schema:
+            $ref: '#/definitions/Sensor'
+      responses:
+        '405':
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/Error'
+        '409':
+          description: The sensor uuid already exists.
+          schema:
+            $ref: '#/definitions/Error'
+  '/sensors/{uuid}':
+    get:
+      description: |
+        Returns the sensor identified by uuid.
+      tags:
+        - Sensor
+      parameters:
+        - in: path
+          name: uuid
+          description: The unique identifier of the sensor.
+          required: true
+          type: number
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Sensor'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      description: |
+        Delete the sensors identified by uuid.
+      tags:
+        - Sensor
+      parameters:
+        - in: path
+          name: uuid
+          description: The unique identifier of the sensor.
+          required: true
+          type: number
+      responses:
+        '204':
+          description: Successful deletion
+  '/sensors/{id}/measurements':
+    get:
+      description: |
+        Returns a collection of `Measurement` for the `Sensor`.
+      tags:
+        - Measurement
+        - Sensor
+      parameters:
+        - in: path
+          name: id
+          description: Sensor unique identifier.
+          required: true
+          type: number
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Measurements'
+definitions:
+  Sensor:
+    required:
+      - uuid
+    properties:
+      uuid:
+        type: string
+        description: Unique identifier of the sensor.
+        example: b7fe9edb-d00b-441d-b645-c3962e3c6c94
+      description:
+        type: string
+        description: Textual description for the sensor.
+        example: SHT 21 sensor in living room.
+  Sensors:
+    description: An array of sensors.
+    type: array
+    items:
+      $ref: '#/definitions/Sensor'
+  Measurement:
+    properties:
+      unit:
+        type: string
+        description: 'Unit, e.g. Celsius, Kelvin.'
+      value:
+        type: number
+        description: Measurement value
+      timestamp:
+        type: number
+        description: 'Measurement was taken at this time, milliseconds since epoch.'
+  Measurements:
+    type: array
+    items:
+      $ref: '#/definitions/Measurement'
+  Error:
+    required:
+      - code
+      - message
+    properties:
+      code:
+        description: Error code
+        type: integer
+        format: int32
+      message:
+        description: Error message
+        type: string

@@ -4,9 +4,9 @@ package de.freitag.stefan.sht21.model;
 import lombok.Getter;
 
 /**
- * The heater is intended to be used for functionality diagnosis – relative humidity drops upon rising
+ * The heater is intended to be used for functionality diagnosis - relative humidity drops upon rising
  * temperature.
- * <p>The heater consumes about 5.5mW and provides a temperature increase of about 0.5 – 1.5°C.</p>
+ * <p>The heater consumes about 5.5mW and provides a temperature increase of about 0.5 - 1.5 deg C.</p>
  */
 @Getter
 public enum HeaterStatus {
