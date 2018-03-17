@@ -3,6 +3,7 @@ package de.freitag.stefan.spring.sht21.server.domain.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@ToString(exclude = "measurements")
 @Entity
 public class Sensor implements Serializable{
     @JsonIgnore
@@ -21,10 +23,14 @@ public class Sensor implements Serializable{
     @Column(name = "uuid", nullable = false, unique = true)
     private String uuid;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
+
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "sensor")
+    @OneToMany(mappedBy = "sensor", orphanRemoval = true)
     private List<Measurement> measurements;
 
     public Sensor() {
@@ -35,12 +41,4 @@ public class Sensor implements Serializable{
         this.measurements.add(measurement);
     }
 
-    @Override
-    public String toString() {
-        return "Sensor{" +
-                "id=" + id +
-                ", uuid='" + uuid + '\'' +
-                ", description='" + description + '\'' +
-                '}';
-    }
 }

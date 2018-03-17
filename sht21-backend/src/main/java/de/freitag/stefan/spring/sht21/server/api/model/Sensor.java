@@ -11,7 +11,12 @@ public class Sensor {
     @JsonProperty("uuid")
     private String uuid;
 
-    @ApiModelProperty(notes = "Semantic description for this sensor.")
+
+    @ApiModelProperty(notes = "Name of the sensor.")
+    @JsonProperty("name")
+    private String name;
+
+    @ApiModelProperty(notes = "Semantic description for the sensor.")
     @JsonProperty("description")
     private String description;
 }
