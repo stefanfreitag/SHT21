@@ -4,6 +4,7 @@
 build
 .gradle
 .idea
+*/applogs
 log/
 
 ### JetBrains template

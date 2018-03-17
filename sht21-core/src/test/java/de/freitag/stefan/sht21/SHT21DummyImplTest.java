@@ -2,55 +2,44 @@ package de.freitag.stefan.sht21;
 
 import de.freitag.stefan.sht21.model.MeasureType;
 import de.freitag.stefan.sht21.model.UnsupportedMeasureTypeException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Test class for {@link SHT21DummyImpl}.
  * @author Stefan Freitag
  */
-public final class SHT21DummyImplTest {
+final class SHT21DummyImplTest {
 
     /**
      * SHT21 dummy implementation to use.
      */
     private final SHT21 sht21 = new SHT21DummyImpl();
 
-    /**
-     * Return the {@link Logger} for this class.
-     *
-     * @return the {@link Logger} for this class.
-     */
-    @SuppressWarnings("unused")
-    private static Logger getLogger() {
-        return LogManager.getLogger(SHT21DummyImpl.class.getCanonicalName());
-    }
-
     @Test
-    public void getResolutionReturnsNotNull() {
+    void getResolutionReturnsNotNull() {
         assertNotNull(sht21.getResolution());
     }
 
     @Test
-    public void getEndOfBatteryAlertReturnsNotNull() {
+    void getEndOfBatteryAlertReturnsNotNull() {
         assertNotNull(sht21.getEndOfBatteryAlert());
     }
 
     @Test
-    public void getHeaterStatusReturnsNotNull() {
+    void getHeaterStatusReturnsNotNull() {
         assertNotNull(sht21.getHeaterStatus());
     }
 
     @Test
-    public void measurePollReturnsNotNull() throws UnsupportedMeasureTypeException {
+    void measurePollReturnsNotNull() throws UnsupportedMeasureTypeException {
         assertNotNull(sht21.measurePoll(MeasureType.TEMPERATURE));
     }
 
-    @Test(expected = NullPointerException.class)
-    public void measurePollWithNullMeasureTypeThrowsNullPointerException() throws UnsupportedMeasureTypeException {
-        sht21.measurePoll(null);
+    @Test
+    void measurePollWithNullMeasureTypeThrowsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> sht21.measurePoll(null));
     }
 }

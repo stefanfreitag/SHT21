@@ -4,12 +4,17 @@ import de.freitag.stefan.sht21.model.*;
 import lombok.NonNull;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Random;
 
 /**
  * A dummy implementation of the SHT21 interface.
  */
-public final class SHT21DummyImpl implements SHT21 {
+public final class SHT21DummyImpl extends AbstractSHT21 {
 
     /**
      * Used to generate random measurement values.
@@ -62,9 +67,9 @@ public final class SHT21DummyImpl implements SHT21 {
     @Override
     public Measurement measurePoll(@NonNull final MeasureType measureType) {
         if (MeasureType.HUMIDITY.equals(measureType)) {
-            return Measurement.builder().value(BigDecimal.valueOf(Math.abs(RAND.nextFloat()))).unit("%RH").build();
+            return Measurement.builder().measuredAt(Instant.now().toEpochMilli()).value(BigDecimal.valueOf(Math.abs(RAND.nextFloat())).setScale(2, RoundingMode.HALF_EVEN)).unit("%RH").build();
         }   else  if (MeasureType.TEMPERATURE.equals(measureType)) {
-            return Measurement.builder().value(BigDecimal.valueOf(Math.abs(RAND.nextFloat()))).unit("CELSIUS").build();
+            return Measurement.builder().measuredAt(Instant.now().toEpochMilli()).value(BigDecimal.valueOf(Math.abs(RAND.nextFloat())).setScale(2, RoundingMode.HALF_EVEN)).unit("CELSIUS").build();
         } else {
             throw new IllegalArgumentException("Unsupported Measurement type: " + measureType);
         }

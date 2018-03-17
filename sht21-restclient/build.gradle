@@ -15,19 +15,15 @@ plugins {
     id 'com.jfrog.bintray' version '1.7.3'
 }
 
-version = '1.0.4'
-
-repositories {
-    mavenCentral()
-}
+version = '1.0.5-SNAPSHOT'
 
 dependencies {
     compile project(':sht21-core')
-    compile 'org.apache.logging.log4j:log4j-api:2.6.2'
-    compile 'org.apache.logging.log4j:log4j-core:2.6.2'
-    compile 'args4j:args4j:2.0.29'
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.10.0'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.10.0'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.2'
+    compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.2')
+
     compile 'com.mashape.unirest:unirest-java:1.4.9'
     testCompile 'junit:junit:4.12'
 }

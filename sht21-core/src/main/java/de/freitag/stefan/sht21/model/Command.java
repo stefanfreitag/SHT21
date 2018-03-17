@@ -55,7 +55,7 @@ public enum Command {
      * Byte code <code>1111.1110</code>.
      * <p>This command is used for rebooting the sensor system without switching the power off and on
      * again. Upon reception of this command, the sensor system reinitialises and starts operation according to the
-     * default settings – with the exception of the heater bit in the user register. The soft reset takes less than
+     * default settings - with the exception of the heater bit in the user register. The soft reset takes less than
      * 15ms.</p>
      */
     SOFT_RESET((byte) 0xfe);

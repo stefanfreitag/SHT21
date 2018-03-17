@@ -10,15 +10,20 @@ import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Implementation of {@link de.freitag.stefan.sht21.SHT21}.
  */
 @Log4j2
-public final class SHT21Impl implements SHT21 {
+public final class SHT21Impl extends AbstractSHT21 {
 
     /**
      * The SHT21 as I2C device.
@@ -213,10 +218,10 @@ public final class SHT21Impl implements SHT21 {
     public Measurement measurePoll(@NonNull  final MeasureType measureType) throws UnsupportedMeasureTypeException {
         switch (measureType) {
             case HUMIDITY: {
-                return Measurement.builder().value(BigDecimal.valueOf(this.measurePollHumidity())).unit("%RH").build();
+                return Measurement.builder().measuredAt(Instant.now().toEpochMilli()).value(BigDecimal.valueOf(this.measurePollHumidity()).setScale(2, RoundingMode.HALF_EVEN)).unit("%RH").build();
             }
             case TEMPERATURE: {
-                return Measurement.builder().value(BigDecimal.valueOf(this.measurePollTemperature())).unit("Celsius").build();
+                return Measurement.builder().measuredAt(Instant.now().toEpochMilli()).value(BigDecimal.valueOf(this.measurePollTemperature()).setScale(2, RoundingMode.HALF_EVEN)).unit("Celsius").build();
             }
             default:
                 throw new UnsupportedMeasureTypeException("MeasureType not supported: " + measureType);
