@@ -17,7 +17,7 @@ public class Measurement {
     @ApiModelProperty(notes = "Measured value.")
     private BigDecimal value;
 
-    @ApiModelProperty(notes = "Timestamp of measurement.")
+    @ApiModelProperty(notes = "Timestamp of measurement in milliseconds since epoch.")
     private long measuredAt;
 
 }
