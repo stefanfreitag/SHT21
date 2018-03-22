@@ -61,7 +61,6 @@ public class SHT21Server implements CommandLineRunner {
         public int getExitCode() {
             return 10;
         }
-
     }
 
     @EnableSwagger2
@@ -80,9 +79,9 @@ public class SHT21Server implements CommandLineRunner {
             return new ApiInfo(
                     "SHT21 Backend REST API",
                     "",
-                    "0.0.1",
+                    "0.0.2",
                     "",
-                    new Contact("Stefan Freitag", "http://www.stefreitag.de", "stefan@stefreitag.de"),
+                    new Contact("Stefan Freitag", "http://www.stefreitag.de/wp", "stefan@stefreitag.de"),
                     "GNU Affero General Public License",
                     "http://www.gnu.org/licenses/agpl-3.0.en.html", Collections.emptyList());
         }

@@ -68,9 +68,6 @@ public class SensorServiceImpl implements SensorService {
     @Override
     public List<de.freitag.stefan.spring.sht21.server.api.model.Measurement> getMeasurements(final String uuid) {
         Sensor sensor = this.repository.findByUuid(uuid);
-        log.info("Getting measurements for sensor with uuid " + uuid);
-        log.info("Size:" + sensor.getMeasurements().size());
-        log.info("Size:" + sensor.getMeasurements());
         return this.convertToDto(sensor.getMeasurements());
     }
 
@@ -105,13 +102,11 @@ public class SensorServiceImpl implements SensorService {
 
 
     private de.freitag.stefan.spring.sht21.server.api.model.Measurement convertToDto(de.freitag.stefan.spring.sht21.server.domain.model.Measurement post) {
-        log.info("Converting to Dto" + post);
         return modelMapper.map(post,de.freitag.stefan.spring.sht21.server.api.model.Measurement.class) ;
     }
 
 
     private List<de.freitag.stefan.spring.sht21.server.api.model.Measurement> convertToDto(List<de.freitag.stefan.spring.sht21.server.domain.model.Measurement> post) {
-        log.info("Converting to Dto" + post);
         java.lang.reflect.Type targetListType = new TypeToken<List<de.freitag.stefan.spring.sht21.server.api.model.Measurement>>() {}.getType();
         return modelMapper.map(post, targetListType);
     }

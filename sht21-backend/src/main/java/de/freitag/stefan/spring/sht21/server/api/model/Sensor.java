@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @Data
 public class Sensor {
-    @ApiModelProperty(notes = "Unique identifier.")
+    @ApiModelProperty(notes = "Unique identifier. Required format is UUID version 4.")
     @JsonProperty("uuid")
     private String uuid;
 
