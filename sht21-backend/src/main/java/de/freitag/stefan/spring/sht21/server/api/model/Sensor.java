@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class Sensor {
     @ApiModelProperty(notes = "Unique identifier. Required format is UUID version 4.")
