@@ -88,7 +88,7 @@ public class SensorsApiController {
     @RequestMapping(value = "/sensors/{id}",
             produces = {"application/json"},
             method = RequestMethod.DELETE)
-    public ResponseEntity<Void> sensorsUuidDelete(BigDecimal uuid) {
+    public ResponseEntity<Void> sensorsUuidDelete(@PathVariable(name = "id") BigDecimal uuid) {
 
         return null;
     }
@@ -109,6 +109,32 @@ public class SensorsApiController {
         } else {
             throw new SensorNotFoundException(uuid);
         }
+    }
+
+    @ApiOperation(value = "Update the sensor information", response = Sensor.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully updated sensor")
+    }
+    )
+    @RequestMapping(value = "/sensors/{id}",
+            produces = {"application/json"},
+            method = RequestMethod.PUT)
+    public Sensor updateSensorByUuid(@PathVariable(name = "id") final String uuid, @RequestBody Sensor body) {
+
+        if (!uuid.equalsIgnoreCase(body.getUuid())) {
+            throw new ApiException("Not allowed to update sensor " + uuid +" with this information. Wrong uuid: " + body.getUuid());
+        }
+
+        if (body.getName()==null) {
+            throw new ApiException("Update sensor with null name is not allowed.");
+        }
+
+        Sensor sensor = this.service.readByUuid(uuid);
+        if (sensor != null) {
+            return this.service.update(uuid, body.getName(), body.getDescription());
+        }
+
+        throw new SensorNotFoundException(uuid);
     }
 
     @ApiOperation(value = "Add a new measurement for a sensor", response = Measurement.class)

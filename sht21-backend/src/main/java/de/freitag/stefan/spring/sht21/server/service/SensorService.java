@@ -13,6 +13,15 @@ public interface SensorService {
 
     Sensor create(String uuid, String description);
 
+    /**
+     * Update the information for an existing sensor.
+     * @param uuid
+     * @param name
+     * @param description
+     * @return
+     */
+    Sensor update(String uuid, String name, String description);
+
     boolean exists(String uuid);
 
     List<Measurement> getMeasurements(String uuid);
