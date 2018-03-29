@@ -51,6 +51,15 @@ public class SensorServiceImpl implements SensorService {
     }
 
     @Override
+    public de.freitag.stefan.spring.sht21.server.api.model.Sensor update(final String uuid, final String name, final String description) {
+        Sensor sensor = this.repository.findByUuid(uuid);
+        sensor.setName(name);
+        sensor.setDescription(description);
+        Sensor save = this.repository.save(sensor);
+        return this.convertToDto(save);
+    }
+
+    @Override
     public de.freitag.stefan.spring.sht21.server.api.model.Sensor readByUuid(final String uuid) {
         log.info("Finding sensor with uuid " + uuid);
         Sensor sensor = this.repository.findByUuid(uuid);
