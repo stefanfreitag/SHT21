@@ -1,7 +1,7 @@
 # SHT21
 
-[![Build Status](https://travis-ci.org/stefanfreitag/SHT21.svg?branch=master)](https://travis-ci.org/stefanfreitag/SHT21)
-[![Coverage Status](https://coveralls.io/repos/stefanfreitag/SHT21/badge.svg)](https://coveralls.io/r/stefanfreitag/SHT21)
+[![Build Status](https://travis-ci.org/stefanfreitag/sht21.svg?branch=master)](https://travis-ci.org/stefanfreitag/sht21)
+[![Coverage Status](https://coveralls.io/repos/stefanfreitag/sht21/badge.svg)](https://coveralls.io/r/stefanfreitag/sht21)
 [![Download](https://api.bintray.com/packages/stefanfreitag/maven/SHT21/images/download.svg)](https://bintray.com/stefanfreitag/maven/SHT21/_latestVersion)
 
 The SHT21 is a digital humidity and temperature sensor made by [Sensirion](https://www.sensirion.com).
