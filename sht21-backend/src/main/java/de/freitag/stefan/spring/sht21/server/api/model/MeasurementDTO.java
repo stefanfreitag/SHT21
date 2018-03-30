@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Setter
 @EqualsAndHashCode
 @ToString
-public class Measurement {
+public class MeasurementDTO {
     @ApiModelProperty(notes = "Measurement unit.")
     private String unit;
 

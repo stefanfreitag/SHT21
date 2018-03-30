@@ -1,0 +1,31 @@
+= SHT21 Backend
+
+
+
+== Features
+=== Sensors
+A sensorDTO has three properties:
+
+* A unique identifier in UUID version 4 format.
+* A non-null name
+* A description
+
+
+==== Create a new sensorDTO
+
+
+ curl -X POST "http://localhost:8080/sensors" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \"description\": \"The description for the sensor\", \"name\": \"The name of the sensor\", \"uuid\": \"3c6bf1df-21bd-4dd9-bceb-34d2c0e1a920\"}"
+{
+  "uuid" : "3c6bf1df-21bd-4dd9-bceb-34d2c0e1a920",
+  "name" : "The name of the sensor",
+  "description" : "The description for the sensor"
+}%
+
+
+=== Measurements
+
+
+=== Other information
+* Human readable Swagger documentation available under http://localhost:8080/swagger-ui.html
+* Machine readable Swagger documentation under  http://localhost:8080/v2/api-docs
+
