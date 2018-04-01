@@ -1,17 +1,22 @@
 package de.freitag.stefan.spring.sht21.server.service;
 
-import de.freitag.stefan.spring.sht21.server.api.model.Measurement;
-import de.freitag.stefan.spring.sht21.server.api.model.Sensor;
+import de.freitag.stefan.spring.sht21.server.api.model.MeasurementDTO;
+import de.freitag.stefan.spring.sht21.server.api.model.SensorDTO;
 
 import java.util.List;
 
 public interface SensorService {
 
-    List<Sensor> readAll();
+    List<SensorDTO> readAll();
 
-    Sensor readByUuid(String uuid);
+    SensorDTO readByUuid(String uuid);
 
-    Sensor create(String uuid, String description);
+    /**
+     * Create a new sensorDTO.
+     * @param sensorDTO The SensorDTO DTO.
+     * @return
+     */
+    SensorDTO create(SensorDTO sensorDTO);
 
     /**
      * Update the information for an existing sensor.
@@ -20,14 +25,14 @@ public interface SensorService {
      * @param description
      * @return
      */
-    Sensor update(String uuid, String name, String description);
+    SensorDTO update(String uuid, String name, String description);
 
     boolean exists(String uuid);
 
-    List<Measurement> getMeasurements(String uuid);
+    List<MeasurementDTO> getMeasurements(String uuid);
 
-    List<Measurement> getMeasurements(String uuid, Long from, Long to);
+    List<MeasurementDTO> getMeasurements(String uuid, Long from, Long to);
 
-    Measurement addMeasurement(String uuid, Measurement measurement);
+    MeasurementDTO addMeasurement(String uuid, MeasurementDTO measurementDTO);
 
 }
