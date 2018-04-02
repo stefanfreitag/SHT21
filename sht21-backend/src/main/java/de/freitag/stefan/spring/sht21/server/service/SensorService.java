@@ -2,6 +2,7 @@ package de.freitag.stefan.spring.sht21.server.service;
 
 import de.freitag.stefan.spring.sht21.server.api.model.MeasurementDTO;
 import de.freitag.stefan.spring.sht21.server.api.model.SensorDTO;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -35,4 +36,11 @@ public interface SensorService {
 
     MeasurementDTO addMeasurement(String uuid, MeasurementDTO measurementDTO);
 
+    /**
+     * Delete an existing sensor by specifying its unique identifier.
+     * @param uuid The unique identifier of the sensor to delete.
+     * @return
+     * @throws UuidNotFoundException if the uuid to delete could not be found.
+     */
+    ResponseEntity<Void> delete(String uuid) throws UuidNotFoundException;
 }

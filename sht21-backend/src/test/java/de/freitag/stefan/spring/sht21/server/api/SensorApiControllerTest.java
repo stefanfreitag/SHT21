@@ -2,6 +2,7 @@ package de.freitag.stefan.spring.sht21.server.api;
 
 import de.freitag.stefan.spring.sht21.server.api.model.SensorDTO;
 import de.freitag.stefan.spring.sht21.server.service.SensorService;
+import de.freitag.stefan.spring.sht21.server.service.UuidNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -16,8 +17,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -69,11 +70,6 @@ public class SensorApiControllerTest {
 
     @Test
     public void createSensorWithAlreadyExistingUuidThrowsConflict() throws Exception {
-        SensorDTO sensorDto1 = new SensorDTO(UUID.randomUUID().toString(), "Name of SensorDTO 1", "Description for SensorDTO 1.");
-
-        List<SensorDTO> sensorDTOS = new ArrayList<>();
-        sensorDTOS.add(sensorDto1);
-
         when(sensorService.exists("e16f9f6c-eb43-4ef7-b7be-48a3653028c9")).thenReturn(true);
 
         mockMvc.perform(post("/sensors/")
@@ -85,4 +81,28 @@ public class SensorApiControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict());
     }
+
+    @Test
+    public void deleteExistingSensorReturnsExpectedStatus() throws Exception {
+        String uuid1 = UUID.randomUUID().toString();
+
+        when(sensorService.delete(uuid1)).thenReturn(null);
+
+        mockMvc.perform(delete("/sensors/" + uuid1)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+
+    @Test
+    public void deleteNonExistingSensorReturnsExpectedStatus() throws Exception {
+        String uuid1 = UUID.randomUUID().toString();
+
+        when(sensorService.delete(uuid1)).thenThrow(new UuidNotFoundException("Sensor UUID"));
+
+        mockMvc.perform(delete("/sensors/" + uuid1)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
 }
