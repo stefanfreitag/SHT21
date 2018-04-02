@@ -2,6 +2,7 @@ package de.freitag.stefan.spring.sht21.server.api;
 
 import de.freitag.stefan.spring.sht21.server.api.model.*;
 import de.freitag.stefan.spring.sht21.server.service.SensorService;
+import de.freitag.stefan.spring.sht21.server.service.UuidNotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -13,10 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.math.BigDecimal;
 import java.util.List;
 
-@CrossOrigin( origins = "*",  allowedHeaders="*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @Api(description = "Operations related to sensors and measurements.")
 @RestController
 public class SensorsApiController {
@@ -51,9 +51,9 @@ public class SensorsApiController {
             produces = {"application/json"},
             method = RequestMethod.GET)
     public List<MeasurementDTO> sensorsIdMeasurementsGet(@PathVariable("id") String id,
-                                                         @RequestParam(value = "from", required = false)Long from,
+                                                         @RequestParam(value = "from", required = false) Long from,
                                                          @RequestParam(value = "to", required = false) Long to) {
-        if (!Sensors.isValidUuid(id)){
+        if (!Sensors.isValidUuid(id)) {
             throw new InvalidUuidException(id);
         }
 
@@ -63,10 +63,10 @@ public class SensorsApiController {
         }
 
         //TODO
-        if (from==null || to == null) {
+        if (from == null || to == null) {
             return this.service.getMeasurements(id);
         } else
-        return this.service.getMeasurements(id, from, to);
+            return this.service.getMeasurements(id, from, to);
 
     }
 
@@ -82,7 +82,7 @@ public class SensorsApiController {
             consumes = {"application/json"},
             method = RequestMethod.POST)
     public SensorDTO createSensor(@Valid @RequestBody SensorDTO body) {
-        if (!Sensors.isValidUuid(body.getUuid())){
+        if (!Sensors.isValidUuid(body.getUuid())) {
             throw new InvalidUuidException(body.getUuid());
         }
         if (this.service.exists(body.getUuid())) {
@@ -91,12 +91,21 @@ public class SensorsApiController {
         return this.service.create(body);
     }
 
+    @ApiOperation(value = "Delete a sensor.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "The sensor was deleted successfully."),
+            @ApiResponse(code = 404, message = "The sensor could not be found."),
+    }
+    )
     @RequestMapping(value = "/sensors/{id}",
             produces = {"application/json"},
             method = RequestMethod.DELETE)
-    public ResponseEntity<Void> sensorsUuidDelete(@PathVariable(name = "id") BigDecimal uuid) {
-
-        return null;
+    public ResponseEntity<Void> sensorsUuidDelete(@PathVariable(name = "id") String uuid) {
+        try {
+            return this.service.delete(uuid);
+        } catch (UuidNotFoundException exception) {
+            throw new SensorNotFoundException(uuid);
+        }
     }
 
 
@@ -128,10 +137,10 @@ public class SensorsApiController {
     public SensorDTO updateSensorByUuid(@PathVariable(name = "id") final String uuid, @RequestBody SensorDTO body) {
 
         if (!uuid.equalsIgnoreCase(body.getUuid())) {
-            throw new ApiException("Not allowed to update sensorDTO " + uuid +" with this information. Wrong uuid: " + body.getUuid());
+            throw new ApiException("Not allowed to update sensorDTO " + uuid + " with this information. Wrong uuid: " + body.getUuid());
         }
 
-        if (body.getName()==null) {
+        if (body.getName() == null) {
             throw new ApiException("Update sensorDTO with null name is not allowed.");
         }
 
@@ -155,7 +164,7 @@ public class SensorsApiController {
                                   @RequestBody MeasurementDTO measurementDTO
     ) {
         SensorDTO oSensorDTO = this.service.readByUuid(id);
-        if (oSensorDTO ==null) {
+        if (oSensorDTO == null) {
             oSensorDTO = this.service.create(oSensorDTO);
             logger.info("Created new sensor with UUID " + oSensorDTO.getUuid());
         }

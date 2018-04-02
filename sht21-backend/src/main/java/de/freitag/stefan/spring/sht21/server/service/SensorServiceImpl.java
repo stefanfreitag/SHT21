@@ -11,6 +11,7 @@ import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,7 +44,7 @@ public class SensorServiceImpl implements SensorService {
     }
 
     @Override
-    public SensorDTO create(final    SensorDTO sensorDTO) {
+    public SensorDTO create(final SensorDTO sensorDTO) {
         Sensor entity = this.convertToEntity(sensorDTO);
         entity = this.repository.save(entity);
         return this.convertToDto(entity);
@@ -62,7 +63,7 @@ public class SensorServiceImpl implements SensorService {
     public SensorDTO readByUuid(final String uuid) {
         log.info("Finding sensor with uuid " + uuid);
         Sensor sensor = this.repository.findByUuid(uuid);
-        if (sensor!=null) {
+        if (sensor != null) {
             return this.convertToDto(sensor);
         }
         return null;
@@ -70,7 +71,7 @@ public class SensorServiceImpl implements SensorService {
 
     @Override
     public boolean exists(final String uuid) {
-        return this.repository.findByUuid(uuid)!=null;
+        return this.repository.findByUuid(uuid) != null;
     }
 
     @Override
@@ -81,7 +82,7 @@ public class SensorServiceImpl implements SensorService {
 
     @Override
     public List<MeasurementDTO> getMeasurements(final String uuid, final Long from, final Long to) {
-        List<Measurement> m = this.measurementRepository.findByMeasuredAtBetweenAndSensor_Id(from, to,uuid);
+        List<Measurement> m = this.measurementRepository.findByMeasuredAtBetweenAndSensor_Id(from, to, uuid);
         log.info("Getting measurements for sensor with uuid " + uuid);
         return this.convertToDto(m);
     }
@@ -98,6 +99,18 @@ public class SensorServiceImpl implements SensorService {
         return this.convertToDto(entity);
     }
 
+    @Override
+    public ResponseEntity<Void> delete(final String uuid) throws UuidNotFoundException {
+        Sensor sensor = this.repository.findByUuid(uuid);
+        if (sensor == null) {
+            throw new UuidNotFoundException("Could not find sensor with uuid " + uuid);
+        }
+
+        this.repository.delete(sensor);
+        log.info("Deleted sensor with uuid " + uuid);
+        return null;
+    }
+
     private SensorDTO convertToDto(@NonNull de.freitag.stefan.spring.sht21.server.domain.model.Sensor post) {
         log.info("Converting to Dto" + post);
         return modelMapper.map(post, SensorDTO.class);
@@ -110,12 +123,13 @@ public class SensorServiceImpl implements SensorService {
 
 
     private MeasurementDTO convertToDto(de.freitag.stefan.spring.sht21.server.domain.model.Measurement post) {
-        return modelMapper.map(post,MeasurementDTO.class) ;
+        return modelMapper.map(post, MeasurementDTO.class);
     }
 
 
     private List<MeasurementDTO> convertToDto(List<de.freitag.stefan.spring.sht21.server.domain.model.Measurement> post) {
-        java.lang.reflect.Type targetListType = new TypeToken<List<MeasurementDTO>>() {}.getType();
+        java.lang.reflect.Type targetListType = new TypeToken<List<MeasurementDTO>>() {
+        }.getType();
         return modelMapper.map(post, targetListType);
     }
 
