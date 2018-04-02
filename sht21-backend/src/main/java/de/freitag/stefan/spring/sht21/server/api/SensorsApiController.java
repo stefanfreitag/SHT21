@@ -2,6 +2,7 @@ package de.freitag.stefan.spring.sht21.server.api;
 
 import de.freitag.stefan.spring.sht21.server.api.model.*;
 import de.freitag.stefan.spring.sht21.server.service.SensorService;
+import de.freitag.stefan.spring.sht21.server.service.UuidNotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -13,10 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.math.BigDecimal;
 import java.util.List;
 
-@CrossOrigin( origins = "*",  allowedHeaders="*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @Api(description = "Operations related to sensors and measurements.")
 @RestController
 public class SensorsApiController {
@@ -38,11 +38,11 @@ public class SensorsApiController {
     @RequestMapping(value = "/sensors",
             produces = {"application/json"},
             method = RequestMethod.GET)
-    public List<Sensor> readSensors() {
+    public List<SensorDTO> readSensors() {
         return this.service.readAll();
     }
 
-    @ApiOperation(value = "Read all measurements for a single sensor", response = Measurement.class)
+    @ApiOperation(value = "Read all measurements for a single sensor", response = MeasurementDTO.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved measurements")
     }
@@ -50,51 +50,66 @@ public class SensorsApiController {
     @RequestMapping(value = "/sensors/{id}/measurements",
             produces = {"application/json"},
             method = RequestMethod.GET)
-    public List<Measurement> sensorsIdMeasurementsGet(@PathVariable("id") String id,
-                                                      @RequestParam(value = "from", required = false)Long from,
-    @RequestParam(value = "to", required = false) Long to) {
-        if (!Sensors.isValidUuid(id)){
+    public List<MeasurementDTO> sensorsIdMeasurementsGet(@PathVariable("id") String id,
+                                                         @RequestParam(value = "from", required = false) Long from,
+                                                         @RequestParam(value = "to", required = false) Long to) {
+        if (!Sensors.isValidUuid(id)) {
             throw new InvalidUuidException(id);
         }
 
-        Sensor sensor = this.service.readByUuid(id);
-        if (sensor == null) {
+        SensorDTO sensorDTO = this.service.readByUuid(id);
+        if (sensorDTO == null) {
             throw new SensorNotFoundException(id);
         }
 
         //TODO
-        if (from==null || to == null) {
+        if (from == null || to == null) {
             return this.service.getMeasurements(id);
         } else
-        return this.service.getMeasurements(id, from, to);
+            return this.service.getMeasurements(id, from, to);
 
     }
 
-    @ApiOperation(value = "Create a new sensors", response = Sensor.class)
+    @ApiOperation(value = "Create a new sensor.", response = SensorDTO.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "The sensor was created successfully."),
+            @ApiResponse(code = 400, message = "There is a problem with the provided information. E.g. the UUID is null."),
+            @ApiResponse(code = 409, message = "There exits already a sensor with the given UUID.")
+    }
+    )
     @RequestMapping(value = "/sensors",
             produces = {"application/json"},
             consumes = {"application/json"},
             method = RequestMethod.POST)
-    public Sensor createSensor(@Valid @RequestBody Sensor body) {
-        if (!Sensors.isValidUuid(body.getUuid())){
+    public SensorDTO createSensor(@Valid @RequestBody SensorDTO body) {
+        if (!Sensors.isValidUuid(body.getUuid())) {
             throw new InvalidUuidException(body.getUuid());
         }
         if (this.service.exists(body.getUuid())) {
             throw new SensorUuidAlreadyExistsException(body.getUuid());
         }
-        return this.service.create(body.getUuid(), body.getDescription());
+        return this.service.create(body);
     }
 
+    @ApiOperation(value = "Delete a sensor.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "The sensor was deleted successfully."),
+            @ApiResponse(code = 404, message = "The sensor could not be found."),
+    }
+    )
     @RequestMapping(value = "/sensors/{id}",
             produces = {"application/json"},
             method = RequestMethod.DELETE)
-    public ResponseEntity<Void> sensorsUuidDelete(@PathVariable(name = "id") BigDecimal uuid) {
-
-        return null;
+    public ResponseEntity<Void> sensorsUuidDelete(@PathVariable(name = "id") String uuid) {
+        try {
+            return this.service.delete(uuid);
+        } catch (UuidNotFoundException exception) {
+            throw new SensorNotFoundException(uuid);
+        }
     }
 
 
-    @ApiOperation(value = "Read information for a single sensor", response = Sensor.class)
+    @ApiOperation(value = "Read information for a single sensor", response = SensorDTO.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved sensor")
     }
@@ -102,16 +117,16 @@ public class SensorsApiController {
     @RequestMapping(value = "/sensors/{id}",
             produces = {"application/json"},
             method = RequestMethod.GET)
-    public Sensor readSensorByUuid(@PathVariable(name = "id") String uuid) {
-        Sensor sensor = this.service.readByUuid(uuid);
-        if (sensor != null) {
-            return sensor;
+    public SensorDTO readSensorByUuid(@PathVariable(name = "id") String uuid) {
+        SensorDTO sensorDTO = this.service.readByUuid(uuid);
+        if (sensorDTO != null) {
+            return sensorDTO;
         } else {
             throw new SensorNotFoundException(uuid);
         }
     }
 
-    @ApiOperation(value = "Update the sensor information", response = Sensor.class)
+    @ApiOperation(value = "Update the sensor information", response = SensorDTO.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully updated sensor")
     }
@@ -119,25 +134,25 @@ public class SensorsApiController {
     @RequestMapping(value = "/sensors/{id}",
             produces = {"application/json"},
             method = RequestMethod.PUT)
-    public Sensor updateSensorByUuid(@PathVariable(name = "id") final String uuid, @RequestBody Sensor body) {
+    public SensorDTO updateSensorByUuid(@PathVariable(name = "id") final String uuid, @RequestBody SensorDTO body) {
 
         if (!uuid.equalsIgnoreCase(body.getUuid())) {
-            throw new ApiException("Not allowed to update sensor " + uuid +" with this information. Wrong uuid: " + body.getUuid());
+            throw new ApiException("Not allowed to update sensorDTO " + uuid + " with this information. Wrong uuid: " + body.getUuid());
         }
 
-        if (body.getName()==null) {
-            throw new ApiException("Update sensor with null name is not allowed.");
+        if (body.getName() == null) {
+            throw new ApiException("Update sensorDTO with null name is not allowed.");
         }
 
-        Sensor sensor = this.service.readByUuid(uuid);
-        if (sensor != null) {
+        SensorDTO sensorDTO = this.service.readByUuid(uuid);
+        if (sensorDTO != null) {
             return this.service.update(uuid, body.getName(), body.getDescription());
         }
 
         throw new SensorNotFoundException(uuid);
     }
 
-    @ApiOperation(value = "Add a new measurement for a sensor", response = Measurement.class)
+    @ApiOperation(value = "Add a new measurementDTO for a sensor", response = MeasurementDTO.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved measurements")
     }
@@ -145,15 +160,15 @@ public class SensorsApiController {
     @RequestMapping(value = "/sensors/{id}/measurements/", method = RequestMethod.POST,
             consumes = {"application/json"},
             produces = {"application/json"})
-    Measurement addMeasurement(@PathVariable final String id,
-                                               @RequestBody Measurement measurement
+    MeasurementDTO addMeasurement(@PathVariable final String id,
+                                  @RequestBody MeasurementDTO measurementDTO
     ) {
-        Sensor oSensor = this.service.readByUuid(id);
-        if (oSensor==null) {
-            oSensor = this.service.create(id, "");
-            logger.info("Created new sensor with UUID " + id);
+        SensorDTO oSensorDTO = this.service.readByUuid(id);
+        if (oSensorDTO == null) {
+            oSensorDTO = this.service.create(oSensorDTO);
+            logger.info("Created new sensor with UUID " + oSensorDTO.getUuid());
         }
-        return this.service.addMeasurement(oSensor.getUuid(), measurement);
+        return this.service.addMeasurement(oSensorDTO.getUuid(), measurementDTO);
     }
 
 }

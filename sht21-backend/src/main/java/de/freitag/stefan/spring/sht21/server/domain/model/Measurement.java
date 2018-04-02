@@ -48,7 +48,7 @@ public class Measurement implements Serializable {
 
     @Override
     public String toString() {
-        return "Measurement{" +
+        return "MeasurementDTO{" +
                 "id=" + id +
                 ", createdAt=" + createdAt +
                 ", measuredAt=" + measuredAt +
