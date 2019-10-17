@@ -9,7 +9,3 @@ env:
 after_success:
 - ./gradlew jacocoTestReport coveralls
 
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer
