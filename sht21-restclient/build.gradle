@@ -22,8 +22,8 @@ dependencies {
     compile project(':sht21-core')
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.10.0'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.10.0'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.2'
-    compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.2')
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.6'
+    compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.6')
 
     compile 'com.mashape.unirest:unirest-java:1.4.9'
     testCompile 'junit:junit:4.12'
