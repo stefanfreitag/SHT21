@@ -40,4 +40,12 @@ abstract class AbstractTask implements Task {
     public void cancel() {
         this.canceled = true;
     }
+
+    public boolean isCanceled(){
+        return this.canceled;
+    }
+
+    public boolean isStarted(){
+        return this.started;
+    }
 }

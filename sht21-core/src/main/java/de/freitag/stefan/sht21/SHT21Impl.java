@@ -6,6 +6,7 @@ import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
 import de.freitag.stefan.sht21.model.*;
 import lombok.NonNull;
+import lombok.extern.java.Log;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
@@ -14,9 +15,7 @@ import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+
 import java.util.concurrent.TimeUnit;
 
 /**
