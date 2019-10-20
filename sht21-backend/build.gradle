@@ -30,10 +30,10 @@ dependencies {
 	compile 'io.springfox:springfox-swagger-ui:2.9.2'
 	//Logging dependencies
 	compile 'org.slf4j:slf4j-api:1.7.25'
-	compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.7'
-	compile 'org.apache.logging.log4j:log4j-api:2.7'
-	compile 'org.apache.logging.log4j:log4j-core:2.7'
-	compile 'org.apache.logging.log4j:log4j-jcl:2.7'
+	compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.10.0'
+	compile 'org.apache.logging.log4j:log4j-api:2.10.0'
+	compile 'org.apache.logging.log4j:log4j-core:2.10.0'
+	compile 'org.apache.logging.log4j:log4j-jcl:2.10.0'
     //Database
 	runtime 'com.h2database:h2'
 	//Other
