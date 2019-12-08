@@ -1,18 +1,7 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.1'
-    }
-}
-
 plugins {
     id 'maven-publish'
-    id 'com.github.kt3k.coveralls' version '2.8.1'
     id 'com.jfrog.bintray' version '1.7.3'
-    id 'io.franzbecker.gradle-lombok' version '3.2.0'
+    id "com.diffplug.gradle.spotless" version "3.26.1"
 }
 
 version = '1.0.5-SNAPSHOT'
@@ -23,9 +12,6 @@ dependencies {
     testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.2'
     testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.2'
     testCompileOnly 'org.apiguardian:apiguardian-api:1.0.0'
-
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.10.0'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.10.0'
 }
 
 tasks.withType(JavaCompile) {
@@ -150,10 +136,4 @@ jacocoTestReport {
         xml.enabled = true
         html.enabled = true
     }
-}
-
-
-lombok { // optional: values below are the defaults
-    version = "1.18.10"
-    sha256 = "2836e954823bfcbad45e78c18896e3d01058e6f643749810c608b7005ee7b2fa"
 }

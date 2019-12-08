@@ -57,11 +57,11 @@ public class SensorsApiController {
             throw new InvalidUuidException(id);
         }
 
-        SensorDTO sensorDTO = this.service.readByUuid(id);
+/*        SensorDTO sensorDTO = this.service.readByUuid(id).get();
         if (sensorDTO == null) {
             throw new SensorNotFoundException(id);
         }
-
+*/
         //TODO
         if (from == null || to == null) {
             return this.service.getMeasurements(id);
@@ -118,7 +118,7 @@ public class SensorsApiController {
             produces = {"application/json"},
             method = RequestMethod.GET)
     public SensorDTO readSensorByUuid(@PathVariable(name = "id") String uuid) {
-        SensorDTO sensorDTO = this.service.readByUuid(uuid);
+        SensorDTO sensorDTO = this.service.readByUuid(uuid).get();
         if (sensorDTO != null) {
             return sensorDTO;
         } else {
@@ -144,7 +144,7 @@ public class SensorsApiController {
             throw new ApiException("Update sensorDTO with null name is not allowed.");
         }
 
-        SensorDTO sensorDTO = this.service.readByUuid(uuid);
+        SensorDTO sensorDTO = this.service.readByUuid(uuid).get();
         if (sensorDTO != null) {
             return this.service.update(uuid, body.getName(), body.getDescription());
         }
@@ -163,12 +163,7 @@ public class SensorsApiController {
     MeasurementDTO addMeasurement(@PathVariable final String id,
                                   @RequestBody MeasurementDTO measurementDTO
     ) {
-        SensorDTO oSensorDTO = this.service.readByUuid(id);
-        if (oSensorDTO == null) {
-            oSensorDTO = this.service.create(oSensorDTO);
-            logger.info("Created new sensor with UUID " + oSensorDTO.getUuid());
-        }
-        return this.service.addMeasurement(oSensorDTO.getUuid(), measurementDTO);
+        return this.service.addMeasurement(id, measurementDTO);
     }
 
 }

@@ -6,7 +6,10 @@ import de.freitag.stefan.spring.sht21.server.domain.model.Measurement;
 import de.freitag.stefan.spring.sht21.server.domain.model.Sensor;
 import de.freitag.stefan.spring.sht21.server.domain.repositories.MeasurementRepository;
 import de.freitag.stefan.spring.sht21.server.domain.repositories.SensorRepository;
+import lombok.Data;
 import lombok.NonNull;
+import lombok.Setter;
+import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -14,9 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
 
 @Log4j2
 @Service
@@ -29,7 +37,7 @@ public class SensorServiceImpl implements SensorService {
     private final ModelMapper modelMapper;
 
     @Autowired
-    public SensorServiceImpl(SensorRepository repository, ModelMapper modelMapper, MeasurementRepository measurementRepository) {
+    public SensorServiceImpl(final @NonNull SensorRepository repository, ModelMapper modelMapper, MeasurementRepository measurementRepository) {
         this.repository = repository;
         this.modelMapper = modelMapper;
         this.measurementRepository = measurementRepository;
@@ -44,40 +52,43 @@ public class SensorServiceImpl implements SensorService {
     }
 
     @Override
-    public SensorDTO create(final SensorDTO sensorDTO) {
-        Sensor entity = this.convertToEntity(sensorDTO);
-        entity = this.repository.save(entity);
-        return this.convertToDto(entity);
-    }
-
-    @Override
-    public SensorDTO update(final String uuid, final String name, final String description) {
-        Sensor sensor = this.repository.findByUuid(uuid);
-        sensor.setName(name);
-        sensor.setDescription(description);
-        Sensor save = this.repository.save(sensor);
-        return this.convertToDto(save);
-    }
-
-    @Override
-    public SensorDTO readByUuid(final String uuid) {
-        log.info("Finding sensor with uuid " + uuid);
-        Sensor sensor = this.repository.findByUuid(uuid);
-        if (sensor != null) {
-            return this.convertToDto(sensor);
+    public SensorDTO create(@NonNull  final SensorDTO sensorDTO) {
+        Optional<Sensor> sensor = this.repository.findByUuid(sensorDTO.getUuid());
+        if (!sensor.isPresent()){
+            Stream.of(sensorDTO).map(this::convertToEntity).forEach(repository::save);
+        return sensorDTO;
         }
         return null;
     }
 
     @Override
-    public boolean exists(final String uuid) {
-        return this.repository.findByUuid(uuid) != null;
+    public SensorDTO update(final String uuid, final String name, final String description) {
+        Optional<Sensor> sensor = this.repository.findByUuid(uuid);
+        sensor.get().setName(name);
+        sensor.get().setDescription(description);
+        //TODO
+        //Sensor save = this.repository.save(sensor);
+        return this.convertToDto(sensor.get());
+    }
+
+    @Override
+    public Optional<SensorDTO> readByUuid(@NonNull final String uuid) {
+        log.info("Finding sensor with uuid " + uuid);
+         return this.repository.findByUuid(uuid).map(this::convertToDto);
+    }
+
+    @Override
+    public boolean exists(@NonNull final String uuid) {
+        System.out.println(uuid);
+        System.out.println(this.repository.findByUuid(uuid).isPresent());
+        System.out.println(this.repository.findAll());
+        return this.repository.findByUuid(uuid).isPresent();
     }
 
     @Override
     public List<MeasurementDTO> getMeasurements(final String uuid) {
-        Sensor sensor = this.repository.findByUuid(uuid);
-        return this.convertToDto(sensor.getMeasurements());
+        //Sensor sensor = this.repository.findByUuid(uuid);
+        return Collections.emptyList();//TODO: this.convertToDto(sensor.getMeasurements());
     }
 
     @Override
@@ -88,25 +99,27 @@ public class SensorServiceImpl implements SensorService {
     }
 
     @Override
-    public MeasurementDTO addMeasurement(final String uuid, final MeasurementDTO measurementDTO) {
+    public MeasurementDTO addMeasurement(@NonNull final String uuid, @NonNull final MeasurementDTO measurementDTO) {
         Measurement entity = this.convertToEntity(measurementDTO);
-        Sensor byUuid = this.repository.findByUuid(uuid);
-        entity.setSensor(byUuid);
-        this.measurementRepository.save(entity);
-        byUuid.add(entity);
-        this.repository.save(byUuid);
-        log.info("Added new measurementDTO for sensor " + byUuid.getUuid());
+        //Optional<Sensor> byUuid = this.repository.findByUuid(uuid);
+        //entity.setSensor(byUuid.get());
+        //TODO
+        //this.measurementRepository.save(entity);
+        //byUuid.add(entity);
+        //this.repository.save(byUuid.get());
+        measurementRepository.save(entity);
+        log.info("Added new measurement for sensor " + uuid + ": " + entity);
         return this.convertToDto(entity);
     }
 
     @Override
     public ResponseEntity<Void> delete(final String uuid) throws UuidNotFoundException {
-        Sensor sensor = this.repository.findByUuid(uuid);
+        Optional<Sensor> sensor = this.repository.findByUuid(uuid);
         if (sensor == null) {
             throw new UuidNotFoundException("Could not find sensor with uuid " + uuid);
         }
 
-        this.repository.delete(sensor);
+        this.repository.delete(sensor.get());
         log.info("Deleted sensor with uuid " + uuid);
         return null;
     }

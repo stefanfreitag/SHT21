@@ -1,5 +1,6 @@
 package de.freitag.stefan.spring.sht21.server.api.model;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
@@ -10,6 +11,7 @@ import java.math.BigDecimal;
 @Setter
 @EqualsAndHashCode
 @ToString
+@ApiModel
 public class MeasurementDTO {
     @ApiModelProperty(notes = "Measurement unit.")
     private String unit;

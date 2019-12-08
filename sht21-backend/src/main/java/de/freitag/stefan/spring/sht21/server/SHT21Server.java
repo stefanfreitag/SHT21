@@ -1,6 +1,5 @@
 package de.freitag.stefan.spring.sht21.server;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.modelmapper.ModelMapper;
@@ -12,8 +11,10 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -26,7 +27,6 @@ import java.util.Collections;
 
 @SpringBootApplication
 @EntityScan("de.freitag.stefan.spring.sht21.server")
-@EnableJpaRepositories("de.freitag.stefan.spring.sht21.server")
 @ComponentScan(basePackages = {"de.freitag.stefan.spring.sht21.server.api", "de.freitag.stefan.spring.sht21.server"})
 public class SHT21Server implements CommandLineRunner {
 
@@ -60,30 +60,6 @@ public class SHT21Server implements CommandLineRunner {
         @Override
         public int getExitCode() {
             return 10;
-        }
-    }
-
-    @EnableSwagger2
-    @Configuration
-    public class SwaggerConfig {
-        @Bean
-        public Docket api() {
-            return new Docket(DocumentationType.SWAGGER_2)
-                    .select()
-                    .apis(RequestHandlerSelectors.basePackage("de.freitag.stefan.spring.sht21.server.api"))
-                    .paths(PathSelectors.any())
-                    .build().apiInfo(metaData());
-        }
-
-        private ApiInfo metaData() {
-            return new ApiInfo(
-                    "SHT21 Backend REST API",
-                    "",
-                    "0.0.2",
-                    "",
-                    new Contact("Stefan Freitag", "http://www.stefreitag.de/wp", "stefan@stefreitag.de"),
-                    "GNU Affero General Public License",
-                    "http://www.gnu.org/licenses/agpl-3.0.en.html", Collections.emptyList());
         }
     }
 
