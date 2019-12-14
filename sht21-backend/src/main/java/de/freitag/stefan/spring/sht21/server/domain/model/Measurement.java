@@ -3,45 +3,33 @@ package de.freitag.stefan.spring.sht21.server.domain.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.redis.core.RedisHash;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 
 
+@NoArgsConstructor
 @Data
 @EqualsAndHashCode
-@Entity
+@RedisHash("Measurement")
 public class Measurement implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @JsonIgnore
     @CreatedDate
-    @Column(name = "createdat", nullable = false)
     private Long createdAt;
 
+    private String sensorId;
 
-    @Column(name = "measuredat", nullable = false)
     private Long measuredAt;
 
-    @ManyToOne
-    @JoinColumn(name = "sensor_id", referencedColumnName = "uuid")
-    private Sensor sensor;
-
-    @Column(name = "value", nullable = false)
     private double value;
 
-    @Column(name = "unit", nullable = false)
     private String unit;
 
-    public Measurement() {
-        //empty default constructor
-    }
-
-    @PrePersist
     void createdAt() {
         this.createdAt = Instant.now().toEpochMilli();
     }

@@ -5,12 +5,13 @@ import de.freitag.stefan.spring.sht21.server.api.model.SensorDTO;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface SensorService {
 
     List<SensorDTO> readAll();
 
-    SensorDTO readByUuid(String uuid);
+    Optional<SensorDTO> readByUuid(String uuid);
 
     /**
      * Create a new sensorDTO.

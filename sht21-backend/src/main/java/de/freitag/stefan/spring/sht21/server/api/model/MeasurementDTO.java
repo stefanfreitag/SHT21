@@ -1,6 +1,5 @@
 package de.freitag.stefan.spring.sht21.server.api.model;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -10,14 +9,15 @@ import java.math.BigDecimal;
 @Setter
 @EqualsAndHashCode
 @ToString
+//@ApiModel
 public class MeasurementDTO {
-    @ApiModelProperty(notes = "Measurement unit.")
+    //    @ApiModelProperty(notes = "Measurement unit.")
     private String unit;
 
-    @ApiModelProperty(notes = "Measured value.")
+    // @ApiModelProperty(notes = "Measured value.")
     private BigDecimal value;
 
-    @ApiModelProperty(notes = "Timestamp of measurement in milliseconds since epoch.")
+    //@ApiModelProperty(notes = "Timestamp of measurement in milliseconds since epoch.")
     private long measuredAt;
 
 }

@@ -1,23 +1,47 @@
-allprojects {
-
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "io.franzbecker:gradle-lombok:3.2.0"
+        classpath "gradle.plugin.com.github.kt3k.coveralls:coveralls-gradle-plugin:2.8.4"
+    }
 }
 
 subprojects {
-    apply plugin: 'java'
+    apply plugin: "io.franzbecker.gradle-lombok"
     apply plugin: 'idea'
+    apply plugin: 'java'
     apply plugin: 'jacoco'
-
+    apply plugin: "com.github.kt3k.coveralls"
 
     repositories {
         mavenCentral()
     }
 
-    dependencies{
-        compileOnly 'org.projectlombok:lombok:1.18.10'
+    ext{
+        log4jVersion = '2.10.0'
+    }
+
+    dependencies {
+        //Logging
+        implementation(
+                'org.apache.logging.log4j:log4j-api:'  + log4jVersion,
+                'org.apache.logging.log4j:log4j-core:'  + log4jVersion,
+        )
+        implementation('com.google.guava:guava:28.1-jre')
+
+    }
+
+    lombok {
+        version = "1.18.10"
+        sha256 = "2836e954823bfcbad45e78c18896e3d01058e6f643749810c608b7005ee7b2fa"
     }
 }
 
 wrapper {
-    gradleVersion = '5.6.2'
+    gradleVersion = '6.0.1'
     distributionUrl = distributionUrl.replace("bin", "all")
 }

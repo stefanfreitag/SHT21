@@ -1,0 +1,19 @@
+spring:
+  main:
+    banner-mode: "off"
+  profiles:
+    active: default
+management:
+  endpoint:
+    health:
+      enabled: true
+    env:
+      enabled: true
+    info:
+      enabled: true
+---
+
+spring:
+  profiles: default
+  redis:
+    url: 192.168.178.20:6379

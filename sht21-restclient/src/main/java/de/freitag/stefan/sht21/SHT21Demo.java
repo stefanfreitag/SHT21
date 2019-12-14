@@ -1,10 +1,10 @@
 package de.freitag.stefan.sht21;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.common.base.Enums;
+import com.google.common.base.Optional;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.ObjectMapper;
@@ -21,8 +21,9 @@ import lombok.extern.log4j.Log4j2;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.nio.file.Paths;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static com.mashape.unirest.http.Unirest.post;
@@ -35,49 +36,41 @@ public final class SHT21Demo implements MeasurementTaskListener {
      */
     private static final int I2C_ADDRESS = 0x40;
 
-    private String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-
-    private String appConfigPath = rootPath + "app.properties";
-
-    private String endpoint;
-    // Measurement interval in seconds.
-    private long interval;
-
-    private String type;
-
-    private String implementation;
-
-
-    private String uuid;
+    private String appConfigPath = Paths.get("app.properties").toAbsolutePath().toString();
 
 
     private Properties appProps = new Properties();
 
-
+    private Configuration configuration;
 
 
     public SHT21Demo() {
-        loadProperties();
+        this.configuration = loadProperties();
     }
 
-    private void loadProperties() {
+    private Configuration loadProperties() {
         try {
             appProps.load(new FileInputStream(appConfigPath));
-            endpoint = appProps.getProperty("sht21.endpoint");
+            String endpoint = appProps.getProperty("sht21.endpoint");
             log.info("Found endpoint in configuration: " + endpoint);
-            interval = Long.valueOf(appProps.getProperty("sht21.measurement.interval"));
+            long interval = Long.valueOf(appProps.getProperty("sht21.measurement.interval"));
             log.info("Found interval in seconds: " + interval);
 
-            type = appProps.getProperty("sht21.measurement.type");
-            implementation = appProps.getProperty("sht21.implementation");
-            uuid=appProps.getProperty("sht21.uuid");
+
+            String type = appProps.getProperty("sht21.measurement.type");
+            Optional<MeasureType> ifPresent = Enums.getIfPresent(MeasureType.class, type);
+
+            String implementation = appProps.getProperty("sht21.implementation");
+            Optional<SensorType> ifPresent1 = Enums.getIfPresent(SensorType.class, implementation);
+
+            String uuid = appProps.getProperty("sht21.uuid");
+            UUID uuid1 = UUID.fromString(uuid);
+            return Configuration.builder().endpoint(endpoint).interval(interval).measureType(ifPresent.get()).implementation(ifPresent1.get()).uuid(uuid1).build();
         } catch (IOException e) {
-            log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
+            throw new RuntimeException("Error creating configuration");
         }
     }
-
-
-
 
 
     /**
@@ -120,7 +113,7 @@ public final class SHT21Demo implements MeasurementTaskListener {
     private void doMain(final String[] args) {
         try {
 
-            execute(type, implementation);
+            execute();
             while (true) {
                 try {
                     TimeUnit.SECONDS.sleep(5000L);
@@ -134,29 +127,29 @@ public final class SHT21Demo implements MeasurementTaskListener {
 
     }
 
-    private void execute(@NonNull String type, @NonNull String implementation) throws UnsupportedMeasureTypeException {
+    private void execute() throws UnsupportedMeasureTypeException {
         MeasureType measureType;
-        if ("humidity".equalsIgnoreCase(type)) {
+        if (MeasureType.HUMIDITY.equals(configuration.getMeasureType())) {
             measureType = MeasureType.HUMIDITY;
 
-        } else if ("temperature".equalsIgnoreCase(type)) {
+        } else if (MeasureType.TEMPERATURE.equals(configuration.getMeasureType())) {
             measureType = MeasureType.TEMPERATURE;
         } else {
-            throw new UnsupportedMeasureTypeException("Measure type '" + type + "' is not supported.");
+            throw new UnsupportedMeasureTypeException("Measure type '" + configuration.getMeasureType() + "' is not supported.");
         }
         SHT21 sht21;
 
-        if ("dummy".equalsIgnoreCase(implementation)) {
+        if (SensorType.DUMMY.equals(configuration.getImplementation())) {
             sht21 = new SHT21DummyImpl();
 
-        } else if ("real".equalsIgnoreCase(implementation)) {
+        } else if (SensorType.REAL.equals(configuration.getImplementation())) {
             sht21 = SHT21Impl.create(I2CBus.BUS_1, I2C_ADDRESS);
         } else {
-            throw new RuntimeException("Unsupported implementation: " + implementation);
+            throw new RuntimeException("Unsupported implementation: " + configuration.getImplementation());
         }
 
         final MeasurementTask task = MeasurementTask.builder().sht21(sht21).measureType(measureType)
-                .interval(TimeUnit.SECONDS.toMillis(interval)).build();
+                .interval(TimeUnit.SECONDS.toMillis(configuration.getInterval())).build();
         task.addListener(this);
         task.start();
     }
@@ -170,33 +163,16 @@ public final class SHT21Demo implements MeasurementTaskListener {
     @Override
     public void onReceived(@NonNull Measurement measurement) {
         try {
-            String fullEndpoint = endpoint + "/sensors/" + uuid + "/" + "measurements/";
+            String fullEndpoint = configuration.getEndpoint() + "/sensors/" + configuration.getUuid() + "/" + "measurements/";
 
             HttpResponse<JsonNode> httpResponse = post(fullEndpoint)
                     .header("Content-Type", "application/json")
                     .body(measurement).asJson();
             log.info("Storing measurement" + measurement);
 
-        } catch (UnirestException e) {
-            log.error(e.getMessage(), e);
+        } catch (final UnirestException exception) {
+            log.error(exception.getMessage());
         }
-
-
-    }
-
-
-}
-
-class LocalDateTimeSerializer extends JsonSerializer<LocalDateTime> {
-    @Override
-    public void serialize(LocalDateTime arg0, JsonGenerator arg1, SerializerProvider arg2) throws IOException, JsonProcessingException {
-        arg1.writeString(arg0.toString());
     }
 }
 
-class LocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
-    @Override
-    public LocalDateTime deserialize(JsonParser arg0, DeserializationContext arg1) throws IOException, JsonProcessingException {
-        return LocalDateTime.parse(arg0.getText());
-    }
-}
