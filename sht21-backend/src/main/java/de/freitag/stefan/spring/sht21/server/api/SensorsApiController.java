@@ -3,10 +3,8 @@ package de.freitag.stefan.spring.sht21.server.api;
 import de.freitag.stefan.spring.sht21.server.api.model.*;
 import de.freitag.stefan.spring.sht21.server.service.SensorService;
 import de.freitag.stefan.spring.sht21.server.service.UuidNotFoundException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+@OpenAPIDefinition
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-@Api(description = "Operations related to sensors and measurements.")
+//@Api(description = "Operations related to sensors and measurements.")
 @RestController
 public class SensorsApiController {
 
@@ -30,11 +29,12 @@ public class SensorsApiController {
         this.service = service;
     }
 
-    @ApiOperation(value = "Read the list of sensors", response = List.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved list")
-    }
-    )
+    //@ApiOperation(value = "Read the list of sensors", response = List.class)
+    //@ApiResponses(value = {
+    //       @ApiResponse(code = 200, message = "Successfully retrieved list")
+    //}
+    //)
+    @Operation(description = "Test")
     @RequestMapping(value = "/sensors",
             produces = {"application/json"},
             method = RequestMethod.GET)
@@ -42,11 +42,11 @@ public class SensorsApiController {
         return this.service.readAll();
     }
 
-    @ApiOperation(value = "Read all measurements for a single sensor", response = MeasurementDTO.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved measurements")
-    }
-    )
+    //    @ApiOperation(value = "Read all measurements for a single sensor", response = MeasurementDTO.class)
+    //@ApiResponses(value = {
+    //       @ApiResponse(code = 200, message = "Successfully retrieved measurements")
+    //}
+    //)
     @RequestMapping(value = "/sensors/{id}/measurements",
             produces = {"application/json"},
             method = RequestMethod.GET)
@@ -70,13 +70,13 @@ public class SensorsApiController {
 
     }
 
-    @ApiOperation(value = "Create a new sensor.", response = SensorDTO.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "The sensor was created successfully."),
-            @ApiResponse(code = 400, message = "There is a problem with the provided information. E.g. the UUID is null."),
-            @ApiResponse(code = 409, message = "There exits already a sensor with the given UUID.")
-    }
-    )
+    //@ApiOperation(value = "Create a new sensor.", response = SensorDTO.class)
+    //@ApiResponses(value = {
+    //       @ApiResponse(code = 200, message = "The sensor was created successfully."),
+    //       @ApiResponse(code = 400, message = "There is a problem with the provided information. E.g. the UUID is null."),
+    //       @ApiResponse(code = 409, message = "There exits already a sensor with the given UUID.")
+    // }
+    //)
     @RequestMapping(value = "/sensors",
             produces = {"application/json"},
             consumes = {"application/json"},
@@ -91,12 +91,12 @@ public class SensorsApiController {
         return this.service.create(body);
     }
 
-    @ApiOperation(value = "Delete a sensor.")
-    @ApiResponses(value = {
-            @ApiResponse(code = 204, message = "The sensor was deleted successfully."),
-            @ApiResponse(code = 404, message = "The sensor could not be found."),
-    }
-    )
+    //@ApiOperation(value = "Delete a sensor.")
+    //@ApiResponses(value = {
+    //       @ApiResponse(code = 204, message = "The sensor was deleted successfully."),
+    //       @ApiResponse(code = 404, message = "The sensor could not be found."),
+    //}
+    //)
     @RequestMapping(value = "/sensors/{id}",
             produces = {"application/json"},
             method = RequestMethod.DELETE)
@@ -109,11 +109,11 @@ public class SensorsApiController {
     }
 
 
-    @ApiOperation(value = "Read information for a single sensor", response = SensorDTO.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved sensor")
-    }
-    )
+    //@ApiOperation(value = "Read information for a single sensor", response = SensorDTO.class)
+    //@ApiResponses(value = {
+    //        @ApiResponse(code = 200, message = "Successfully retrieved sensor")
+    // }
+    // )
     @RequestMapping(value = "/sensors/{id}",
             produces = {"application/json"},
             method = RequestMethod.GET)
@@ -126,11 +126,11 @@ public class SensorsApiController {
         }
     }
 
-    @ApiOperation(value = "Update the sensor information", response = SensorDTO.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully updated sensor")
-    }
-    )
+    // @ApiOperation(value = "Update the sensor information", response = SensorDTO.class)
+    //@ApiResponses(value = {
+    //        @ApiResponse(code = 200, message = "Successfully updated sensor")
+    //}
+    //)
     @RequestMapping(value = "/sensors/{id}",
             produces = {"application/json"},
             method = RequestMethod.PUT)
@@ -152,11 +152,11 @@ public class SensorsApiController {
         throw new SensorNotFoundException(uuid);
     }
 
-    @ApiOperation(value = "Add a new measurementDTO for a sensor", response = MeasurementDTO.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved measurements")
-    }
-    )
+    //@ApiOperation(value = "Add a new measurementDTO for a sensor", response = MeasurementDTO.class)
+    //@ApiResponses(value = {
+    //        @ApiResponse(code = 200, message = "Successfully retrieved measurements")
+    //}
+    // )
     @RequestMapping(value = "/sensors/{id}/measurements/", method = RequestMethod.POST,
             consumes = {"application/json"},
             produces = {"application/json"})

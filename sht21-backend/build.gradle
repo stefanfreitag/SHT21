@@ -21,6 +21,7 @@ configurations {
 ext{
     jacksonVersion = '2.10.1'
 	swaggerVersion = '2.9.2'
+	openApiVersion = '1.1.44'
 
 }
 dependencies {
@@ -31,10 +32,8 @@ dependencies {
 	testCompile 'org.springframework.boot:spring-boot-starter-test'
 
 	compile 'org.modelmapper:modelmapper:0.7.5'
-	//Swagger
-	implementation( 'io.springfox:springfox-swagger2:' + swaggerVersion,
-		'io.springfox:springfox-swagger-ui:' + swaggerVersion
-    )
+	implementation('org.springdoc:springdoc-openapi-ui:' + openApiVersion,
+					'org.springdoc:springdoc-openapi-core:' + openApiVersion)
 	implementation('io.vavr:vavr:0.10.2')
 
     //Database
