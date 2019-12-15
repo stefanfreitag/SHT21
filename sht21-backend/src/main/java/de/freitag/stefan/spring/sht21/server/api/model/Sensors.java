@@ -1,5 +1,8 @@
 package de.freitag.stefan.spring.sht21.server.api.model;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class Sensors {
 
  public static boolean isValidUuid(final String text){
