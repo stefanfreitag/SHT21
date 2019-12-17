@@ -1,7 +1,7 @@
 plugins {
 	id 'java'
 	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
-	id 'org.springframework.boot' version '2.1.6.RELEASE'
+	id 'org.springframework.boot' version '2.2.2.RELEASE'
 	id "com.diffplug.gradle.spotless" version "3.26.1"
 }
 
@@ -21,7 +21,7 @@ configurations {
 ext{
     jacksonVersion = '2.10.1'
 	swaggerVersion = '2.9.2'
-	openApiVersion = '1.1.44'
+	openApiVersion = '1.2.17'
 
 }
 dependencies {
@@ -32,12 +32,11 @@ dependencies {
 	testCompile 'org.springframework.boot:spring-boot-starter-test'
 
 	compile 'org.modelmapper:modelmapper:0.7.5'
-	implementation('org.springdoc:springdoc-openapi-ui:' + openApiVersion,
-					'org.springdoc:springdoc-openapi-core:' + openApiVersion)
+	implementation('org.springdoc:springdoc-openapi-ui:' + openApiVersion)
 	implementation('io.vavr:vavr:0.10.2')
 
     //Database
-	implementation('redis.clients:jedis:2.9.0')
+	implementation('redis.clients:jedis:3.1.0')
 
 	//Other
 	implementation( 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:' + jacksonVersion,
@@ -48,4 +47,8 @@ dependencies {
 
 tasks.withType(JavaCompile) {
 	options.compilerArgs << "-Xlint:unchecked" << "-Werror"
+}
+
+javadoc {
+	options.addBooleanOption('html5', true)
 }
