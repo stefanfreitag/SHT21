@@ -1,6 +1,7 @@
 package de.freitag.stefan.spring.sht21.server.api;
 
 import de.freitag.stefan.spring.sht21.server.api.model.*;
+import de.freitag.stefan.spring.sht21.server.domain.model.Sensor;
 import de.freitag.stefan.spring.sht21.server.service.SensorService;
 import de.freitag.stefan.spring.sht21.server.service.UuidNotFoundException;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -11,23 +12,24 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @OpenAPIDefinition
 @Tag(name = "sensor", description = "The sensor API")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-//@Api(description = "Operations related to sensors and measurements.")
 @RestController
+@Log4j2
 public class SensorsApiController {
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final SensorService service;
 
@@ -36,29 +38,30 @@ public class SensorsApiController {
         this.service = service;
     }
 
-    @Operation(summary = "Read the list of sensors", description = "Returns the list sensors", tags = {"sensor"})
+    @Operation(summary = "Read the list of sensors", description = "Returns the list sensors.", tags = {"sensor"})
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved list",
+            @ApiResponse(responseCode = "200", description = "Successful retrieval of all registered sensors.",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = SensorDTO.class)))
-
             )
     }
     )
-    @RequestMapping(value = "/sensors",
-            produces = {"application/json"},
-            method = RequestMethod.GET)
+    @GetMapping(value = "/sensors", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<SensorDTO> readSensors() {
-        return this.service.readAll();
+        return this.service.readAll().stream().map(SensorDTO::from).collect(Collectors.toList());
     }
+    
+    @GetMapping(value = "/sensors/{uuid}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SensorDTO readSensor(@PathVariable("uuid") String uuid) {
+        return this.service.readByUuid(uuid).map(SensorDTO::from).orElseThrow(() -> new SensorNotFoundException(uuid));
+    }
+
 
     @Operation(summary = "Read all measurements for a single sensor")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved measurements")
     }
     )
-    @RequestMapping(value = "/sensors/{id}/measurements",
-            produces = {"application/json"},
-            method = RequestMethod.GET)
+    @GetMapping(value = "/sensors/{id}/measurements", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MeasurementDTO> sensorsIdMeasurementsGet(@PathVariable("id") String id,
                                                          @RequestParam(value = "from", required = false) Long from,
                                                          @RequestParam(value = "to", required = false) Long to) {
@@ -87,8 +90,8 @@ public class SensorsApiController {
     }
     )
     @RequestMapping(value = "/sensors",
-            produces = {"application/json"},
-            consumes = {"application/json"},
+            produces = {MediaType.APPLICATION_JSON_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE},
             method = RequestMethod.POST)
     public SensorDTO createSensor(@Valid @RequestBody SensorDTO body) {
         if (!Sensors.isValidUuid(body.getUuid())) {
@@ -107,30 +110,12 @@ public class SensorsApiController {
     }
     )
     @RequestMapping(value = "/sensors/{id}",
-            produces = {"application/json"},
+            produces = {MediaType.APPLICATION_JSON_VALUE},
             method = RequestMethod.DELETE)
     public ResponseEntity<Void> sensorsUuidDelete(@PathVariable(name = "id") String uuid) {
         try {
             return this.service.delete(uuid);
         } catch (UuidNotFoundException exception) {
-            throw new SensorNotFoundException(uuid);
-        }
-    }
-
-
-    @Operation(summary = "Read information for a single sensor")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved sensor")
-    }
-    )
-    @RequestMapping(value = "/sensors/{id}",
-            produces = {"application/json"},
-            method = RequestMethod.GET)
-    public SensorDTO readSensorByUuid(@PathVariable(name = "id") String uuid) {
-        SensorDTO sensorDTO = this.service.readByUuid(uuid).get();
-        if (sensorDTO != null) {
-            return sensorDTO;
-        } else {
             throw new SensorNotFoundException(uuid);
         }
     }
@@ -141,7 +126,7 @@ public class SensorsApiController {
     }
     )
     @RequestMapping(value = "/sensors/{id}",
-            produces = {"application/json"},
+            produces = {MediaType.APPLICATION_JSON_VALUE},
             method = RequestMethod.PUT)
     public SensorDTO updateSensorByUuid(@PathVariable(name = "id") final String uuid, @RequestBody SensorDTO body) {
 
@@ -153,7 +138,7 @@ public class SensorsApiController {
             throw new ApiException("Update sensorDTO with null name is not allowed.");
         }
 
-        SensorDTO sensorDTO = this.service.readByUuid(uuid).get();
+        Sensor sensorDTO = this.service.readByUuid(uuid).get();
         if (sensorDTO != null) {
             return this.service.update(uuid, body.getName(), body.getDescription());
         }
@@ -167,8 +152,8 @@ public class SensorsApiController {
     }
     )
     @RequestMapping(value = "/sensors/{id}/measurements/", method = RequestMethod.POST,
-            consumes = {"application/json"},
-            produces = {"application/json"})
+            consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     MeasurementDTO addMeasurement(@PathVariable final String id,
                                   @RequestBody MeasurementDTO measurementDTO
     ) {

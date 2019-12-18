@@ -6,10 +6,7 @@ import de.freitag.stefan.spring.sht21.server.domain.model.Measurement;
 import de.freitag.stefan.spring.sht21.server.domain.model.Sensor;
 import de.freitag.stefan.spring.sht21.server.domain.repositories.MeasurementRepository;
 import de.freitag.stefan.spring.sht21.server.domain.repositories.SensorRepository;
-import lombok.Data;
 import lombok.NonNull;
-import lombok.Setter;
-import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -17,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -44,10 +40,9 @@ public class SensorServiceImpl implements SensorService {
     }
 
     @Override
-    public List<SensorDTO> readAll() {
+    public List<Sensor> readAll() {
         return
                 StreamSupport.stream(this.repository.findAll().spliterator(), false)
-                        .map(this::convertToDto)
                         .collect(Collectors.toList());
     }
 
@@ -68,13 +63,15 @@ public class SensorServiceImpl implements SensorService {
         sensor.get().setDescription(description);
         //TODO
         //Sensor save = this.repository.save(sensor);
-        return this.convertToDto(sensor.get());
+//        return this.convertToDto(sensor.get());
+        return null;
     }
 
     @Override
-    public Optional<SensorDTO> readByUuid(@NonNull final String uuid) {
+    public Optional<Sensor> readByUuid(@NonNull final String uuid) {
         log.info("Finding sensor with uuid " + uuid);
-         return this.repository.findByUuid(uuid).map(this::convertToDto);
+        return this.repository.findByUuid(uuid);
+
     }
 
     @Override
@@ -122,11 +119,6 @@ public class SensorServiceImpl implements SensorService {
         this.repository.delete(sensor.get());
         log.info("Deleted sensor with uuid " + uuid);
         return null;
-    }
-
-    private SensorDTO convertToDto(@NonNull de.freitag.stefan.spring.sht21.server.domain.model.Sensor post) {
-        log.info("Converting to Dto" + post);
-        return modelMapper.map(post, SensorDTO.class);
     }
 
     private de.freitag.stefan.spring.sht21.server.domain.model.Sensor convertToEntity(SensorDTO postDto) {

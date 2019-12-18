@@ -1,6 +1,7 @@
 package de.freitag.stefan.spring.sht21.server.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.freitag.stefan.spring.sht21.server.domain.model.Sensor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -24,4 +25,12 @@ public class SensorDTO {
     @Schema(description = "Semantic description for the sensor.", example = "On table in living room.")
     @JsonProperty("description")
     private String description;
+
+    public static SensorDTO from(@NonNull Sensor sensor) {
+        return SensorDTO.builder()
+                .uuid(sensor.getUuid())
+                .name(sensor.getName())
+                .description(sensor.getDescription())
+                .build();
+    }
 }
