@@ -1,6 +1,7 @@
 package de.freitag.stefan.spring.sht21.server.api;
 
 import de.freitag.stefan.spring.sht21.server.api.model.SensorDTO;
+import de.freitag.stefan.spring.sht21.server.domain.model.Sensor;
 import de.freitag.stefan.spring.sht21.server.service.SensorService;
 import de.freitag.stefan.spring.sht21.server.service.UuidNotFoundException;
 import org.junit.Before;
@@ -42,14 +43,14 @@ public class SensorApiControllerTest {
 
     @Test
     public void fetchAllSensorsReturnsExpectedNumbeAndStatus() throws Exception {
-        SensorDTO sensorDto1 = new SensorDTO(UUID.randomUUID().toString(), "Name of SensorDTO 1", "Description for SensorDTO 1.");
-        SensorDTO sensorDto2 = new SensorDTO(UUID.randomUUID().toString(), "Name of SensorDTO 2", "Description for SensorDTO 2.");
+        Sensor sensorDto1 = new Sensor(UUID.randomUUID().toString(), "Name of Sensor 1", "Description for Sensor 1.");
+        Sensor sensorDto2 = new Sensor(UUID.randomUUID().toString(), "Name of Sensor 2", "Description for Sensor 2.");
 
-        List<SensorDTO> sensorDTOS = new ArrayList<>();
-        sensorDTOS.add(sensorDto1);
-        sensorDTOS.add(sensorDto2);
+        List<Sensor> sensors = new ArrayList<>();
+        sensors.add(sensorDto1);
+        sensors.add(sensorDto2);
 
-        when(sensorService.readAll()).thenReturn(sensorDTOS);
+        when(sensorService.readAll()).thenReturn(sensors);
 
         mockMvc.perform(get("/sensors/")
                 .contentType(MediaType.APPLICATION_JSON))
