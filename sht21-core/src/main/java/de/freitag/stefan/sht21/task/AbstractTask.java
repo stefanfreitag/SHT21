@@ -1,51 +1,44 @@
 package de.freitag.stefan.sht21.task;
 
-import lombok.Getter;
-
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import lombok.Getter;
 
 @Getter
 abstract class AbstractTask implements Task {
 
-    /**
-     * The unique identifier of this task.
-     */
-    private final UUID identifier;
-    
-    private boolean started;
+  /** The unique identifier of this task. */
+  private final UUID identifier;
 
-    private boolean canceled;
+  private boolean started;
 
-    private ScheduledExecutorService service;
+  private boolean canceled;
 
-    /**
-     * Create a new {@link AbstractTask},
-     */
-    AbstractTask() {
-        super();
-        this.identifier = UUID.randomUUID();
-        this.service = Executors.newScheduledThreadPool(1);
+  private ScheduledExecutorService service;
 
-    }
+  /** Create a new {@link AbstractTask}, */
+  AbstractTask() {
+    super();
+    this.identifier = UUID.randomUUID();
+    this.service = Executors.newScheduledThreadPool(1);
+  }
 
+  @Override
+  public void start() {
+    this.started = true;
+  }
 
-    @Override
-    public void start() {
-        this.started = true;
-    }
+  @Override
+  public void cancel() {
+    this.canceled = true;
+  }
 
-    @Override
-    public void cancel() {
-        this.canceled = true;
-    }
+  public boolean isCanceled() {
+    return this.canceled;
+  }
 
-    public boolean isCanceled(){
-        return this.canceled;
-    }
-
-    public boolean isStarted(){
-        return this.started;
-    }
+  public boolean isStarted() {
+    return this.started;
+  }
 }

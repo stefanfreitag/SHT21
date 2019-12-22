@@ -5,11 +5,11 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class Sensors {
 
- public static boolean isValidUuid(final String text){
-     if (text==null) {
-         return false;
-     }
-     return text.matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
- }
-
+  public static boolean isValidUuid(final String text) {
+    if (text == null) {
+      return false;
+    }
+    return text.matches(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
+  }
 }

@@ -1,9 +1,8 @@
 package de.freitag.stefan.spring.sht21.server.api.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-
 import java.math.BigDecimal;
+import lombok.*;
 
 @NoArgsConstructor
 @Getter
@@ -11,14 +10,12 @@ import java.math.BigDecimal;
 @EqualsAndHashCode
 @ToString
 public class MeasurementDTO {
-    @Schema(description = "Measurement unit.")
-    private String unit;
+  @Schema(description = "Measurement unit.")
+  private String unit;
 
-    @Schema(description = "Measured value.")
-    private BigDecimal value;
+  @Schema(description = "Measured value.")
+  private BigDecimal value;
 
-    @Schema(description = "Timestamp of measurement in milliseconds since epoch.")
-    private long measuredAt;
-
+  @Schema(description = "Timestamp of measurement in milliseconds since epoch.")
+  private long measuredAt;
 }
-

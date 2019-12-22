@@ -10,20 +10,18 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class OpenApiConfig {
-    @Bean
-    public OpenAPI customOpenAPI() {
-        return new OpenAPI()
-                .components(new Components())
-                .info(new Info()
-                        .title("SHT21 Backend REST API")
-                        .contact(
-                                new Contact().name("Stefan Freitag")
-                                        .url("http://www.stefreitag.de/wp")
-                                        .email("stefan@stefreitag.de")
-                        ).license(new License().name("GNU Affero General Public License"))
-                );
-
-    }
-
+  @Bean
+  public OpenAPI customOpenAPI() {
+    return new OpenAPI()
+        .components(new Components())
+        .info(
+            new Info()
+                .title("SHT21 Backend REST API")
+                .contact(
+                    new Contact()
+                        .name("Stefan Freitag")
+                        .url("http://www.stefreitag.de/wp")
+                        .email("stefan@stefreitag.de"))
+                .license(new License().name("GNU Affero General Public License")));
+  }
 }
-

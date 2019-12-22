@@ -1,7 +1,6 @@
 plugins {
     id 'maven-publish'
     id 'com.jfrog.bintray' version '1.7.3'
-    id "com.diffplug.gradle.spotless" version "3.26.1"
 }
 
 version = '1.0.5-SNAPSHOT'
@@ -9,8 +8,8 @@ version = '1.0.5-SNAPSHOT'
 dependencies {
     compile 'com.pi4j:pi4j-core:1.1'
 
-    testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.2'
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.0.2'
+    testRuntimeOnly'org.junit.jupiter:junit-jupiter-engine:5.0.2'
     testCompileOnly 'org.apiguardian:apiguardian-api:1.0.0'
 }
 
@@ -111,7 +110,7 @@ compileJava {
 
 jar {
     manifest {
-        attributes 'Implementation-Title': 'SHT21 Core Library', 'Implementation-Version': version
+        attributes 'Implementation-Title': 'SHT21 Core Library', 'Implementation-Version': archiveVersion
     }
     exclude('log4j2.xml')
 }
@@ -136,4 +135,8 @@ jacocoTestReport {
         xml.enabled = true
         html.enabled = true
     }
+}
+
+javadoc {
+    options.addBooleanOption('html5', true)
 }

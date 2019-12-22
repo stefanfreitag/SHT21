@@ -2,7 +2,6 @@ plugins {
 	id 'java'
 	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
 	id 'org.springframework.boot' version '2.2.2.RELEASE'
-	id "com.diffplug.gradle.spotless" version "3.26.1"
 }
 
 version = '0.0.2-SNAPSHOT'
@@ -29,9 +28,9 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-actuator',
 		'org.springframework.boot:spring-boot-starter-data-rest',
 		'org.springframework.data:spring-data-redis')
-	testCompile 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-	compile 'org.modelmapper:modelmapper:0.7.5'
+	implementation 'org.modelmapper:modelmapper:0.7.5'
 	implementation('org.springdoc:springdoc-openapi-ui:' + openApiVersion)
 	implementation('io.vavr:vavr:0.10.2')
 
@@ -51,4 +50,15 @@ tasks.withType(JavaCompile) {
 
 javadoc {
 	options.addBooleanOption('html5', true)
+}
+
+spotless{
+	java {
+		target project.fileTree(project.rootDir) {
+			include '**/*.java'
+			exclude '**/generated/**'
+		}
+		googleJavaFormat()
+		removeUnusedImports()
+	}
 }

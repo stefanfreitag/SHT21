@@ -7,16 +7,20 @@ buildscript {
     dependencies {
         classpath "io.franzbecker:gradle-lombok:3.2.0"
         classpath "gradle.plugin.com.github.kt3k.coveralls:coveralls-gradle-plugin:2.8.4"
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:3.26.1"
     }
 }
 
 subprojects {
+
+
+
     apply plugin: "io.franzbecker.gradle-lombok"
     apply plugin: 'idea'
     apply plugin: 'java'
     apply plugin: 'jacoco'
     apply plugin: "com.github.kt3k.coveralls"
-
+    apply plugin: "com.diffplug.gradle.spotless"
     repositories {
         mavenCentral()
     }
