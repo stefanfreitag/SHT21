@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
@@ -47,11 +46,12 @@ public class SensorService {
 
   public Sensor create(@NonNull final Sensor sensor) {
     Optional<Sensor> result = this.repository.findByUuid(sensor.getUuid());
-    if (!result.isPresent()) {
-      Stream.of(sensor).forEach(repository::save);
+    if (result.isPresent()) {
+      return result.get();
+    } else {
+      this.repository.save(sensor);
       return sensor;
     }
-    return null;
   }
 
   public SensorDTO update(final String uuid, final String name, final String description) {

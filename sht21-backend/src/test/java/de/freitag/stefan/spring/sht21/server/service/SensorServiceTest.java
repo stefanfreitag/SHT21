@@ -61,4 +61,29 @@ class SensorServiceTest {
     verify(repository, times(0)).findAll();
     verifyNoMoreInteractions();
   }
+
+  @DisplayName("Create call for an existing sensor.")
+  @Test
+  void createForExistingSensor() {
+    final UUID uuid = UUID.randomUUID();
+    final Sensor sensor =
+        Sensor.builder().uuid(uuid.toString()).name("Sensor 1").description("Description").build();
+    when(this.repository.findByUuid(uuid.toString())).thenReturn(Optional.of(sensor));
+
+    Sensor result = service.create(sensor);
+    assertEquals(sensor, result);
+  }
+
+  @DisplayName("Create call for a non-existing sensor.")
+  @Test
+  void createForNonExistingSensor() {
+    final UUID uuid = UUID.randomUUID();
+    final Sensor sensor =
+        Sensor.builder().uuid(uuid.toString()).name("Sensor 1").description("Description").build();
+    when(this.repository.findByUuid(uuid.toString())).thenReturn(Optional.empty());
+    Sensor result = service.create(sensor);
+
+    verify(repository, times(1)).save(sensor);
+    assertEquals(sensor, result);
+  }
 }
