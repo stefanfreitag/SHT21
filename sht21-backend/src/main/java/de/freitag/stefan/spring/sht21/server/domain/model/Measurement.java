@@ -1,49 +1,41 @@
 package de.freitag.stefan.spring.sht21.server.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import de.freitag.stefan.spring.sht21.server.api.model.MeasurementDTO;
 import java.io.Serializable;
 import java.time.Instant;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.redis.core.RedisHash;
+import lombok.*;
+import org.influxdb.annotation.Column;
+import org.influxdb.annotation.TimeColumn;
 
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Data
 @EqualsAndHashCode
-@RedisHash("Measurement")
+@org.influxdb.annotation.Measurement(name = "sht_21_measurements")
 public class Measurement implements Serializable {
-  private Long id;
 
-  @JsonIgnore @CreatedDate private Long createdAt;
+  @Column(name = "uuid", tag = true)
+  private String uuid;
 
-  private String sensorId;
+  @TimeColumn
+  @Column(name = "time")
+  private Instant measuredAt;
 
-  private Long measuredAt;
-
+  @Column(name = "value")
   private double value;
 
+  @Column(name = "unit")
   private String unit;
 
-  void createdAt() {
-    this.createdAt = Instant.now().toEpochMilli();
-  }
+  @Column(name = "type")
+  private String type;
 
-  @Override
-  public String toString() {
-    return "MeasurementDTO{"
-        + "id="
-        + id
-        + ", createdAt="
-        + createdAt
-        + ", measuredAt="
-        + measuredAt
-        + ", value="
-        + value
-        + ", unit='"
-        + unit
-        + '\''
-        + '}';
+  public static Measurement fromDTO(@NonNull final MeasurementDTO measurementDTO) {
+    return Measurement.builder()
+        .value(measurementDTO.getValue().doubleValue())
+        .unit(measurementDTO.getUnit())
+        .measuredAt(Instant.ofEpochMilli(measurementDTO.getMeasuredAt()))
+        .build();
   }
 }

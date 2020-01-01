@@ -1,148 +1,148 @@
 plugins {
-    id 'application'
-    id 'maven-publish'
-    id 'com.jfrog.bintray' version '1.7.3'
+	id 'application'
+	id 'maven-publish'
+	id 'com.jfrog.bintray' version '1.7.3'
 }
 
 version = '1.0.4'
 
 dependencies {
-    compile project(':sht21-core')
-    compile 'args4j:args4j:2.33'
+	compile project(':sht21-core')
+	compile 'args4j:args4j:2.33'
 }
 
 def pomConfig = {
-    inceptionYear '2014'
-    licenses {
-        license {
-            name "AGPL"
-            url "https://github.com/stefanfreitag/SHT21/blob/master/LICENSE"
-            distribution "repo"
-        }
-    }
+	inceptionYear '2014'
+	licenses {
+		license {
+			name "AGPL"
+			url "https://github.com/stefanfreitag/SHT21/blob/master/LICENSE"
+			distribution "repo"
+		}
+	}
 
-    scm {
-        url 'scm:git:https://github.com/stefanfreitag/SHT21'
-        connection 'scm:git:https://github.com/stefanfreitag/SHT21'
-        developerConnection 'scm:git:https://github.com/stefanfreitag/SHT21'
-    }
-    developers {
-        developer {
-            id "sfreitag"
-            name "Stefan Freitag"
-            email "stefan@stefreitag.de"
-            timezone "Europe/Berlin"
-            roles {
-                role "developer"
-            }
-        }
-    }
+	scm {
+		url 'scm:git:https://github.com/stefanfreitag/SHT21'
+		connection 'scm:git:https://github.com/stefanfreitag/SHT21'
+		developerConnection 'scm:git:https://github.com/stefanfreitag/SHT21'
+	}
+	developers {
+		developer {
+			id "sfreitag"
+			name "Stefan Freitag"
+			email "stefan@stefreitag.de"
+			timezone "Europe/Berlin"
+			roles {
+				role "developer"
+			}
+		}
+	}
 }
 
 publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact jar
-//            artifact sourcesJar
-//            artifact javadocJar
-            artifact distZip
+	publications {
+		mavenJava(MavenPublication) {
+			artifact jar
+			//            artifact sourcesJar
+			//            artifact javadocJar
+			artifact distZip
 
-            groupId 'de.freitag.stefan'
-            pom.withXml {
-                def root = asNode()
-                root.appendNode('description', '')
-                root.children().last() + pomConfig
-            }
-        }
-    }
+			groupId 'de.freitag.stefan'
+			pom.withXml {
+				def root = asNode()
+				root.appendNode('description', '')
+				root.children().last() + pomConfig
+			}
+		}
+	}
 }
 
 bintrayUpload.dependsOn(build)
 
 
 bintray {
-    if (!project.hasProperty('bintray_user')) {
-        project.ext.bintray_user = 'default'
-    }
-    if (!project.hasProperty('bintray_api_key')) {
-        project.ext.bintray_api_key = 'default'
-    }
+	if (!project.hasProperty('bintray_user')) {
+		project.ext.bintray_user = 'default'
+	}
+	if (!project.hasProperty('bintray_api_key')) {
+		project.ext.bintray_api_key = 'default'
+	}
 
-    user = "$bintray_user"
-    key = "$bintray_api_key"
+	user = "$bintray_user"
+	key = "$bintray_api_key"
 
-    publications = ['mavenJava']
+	publications = ['mavenJava']
 
-    dryRun = false
-    publish = true
-    pkg {
-        repo = 'maven'
-        name = 'SHT21-Demo'
-        desc = 'Example applications for the SHT21 core library'
-        websiteUrl = 'https://github.com/stefanfreitag/SHT21'
-        issueTrackerUrl = 'https://github.com/stefanfreitag/SHT21/issues'
-        vcsUrl = 'git://github.com/stefanfreitag/SHT21.git'
-        licenses = ['AGPL-V3']
-        labels = ['Java', 'SHT21', 'Demo']
-        publicDownloadNumbers = true
-        version {
-            name = project.version
-            vcsTag = project.version
-            gpg {
-                sign = true
-                passphrase = project.hasProperty('gpg_passphrase') ? gpg_passphrase : ''
-            }
-        }
+	dryRun = false
+	publish = true
+	pkg {
+		repo = 'maven'
+		name = 'SHT21-Demo'
+		desc = 'Example applications for the SHT21 core library'
+		websiteUrl = 'https://github.com/stefanfreitag/SHT21'
+		issueTrackerUrl = 'https://github.com/stefanfreitag/SHT21/issues'
+		vcsUrl = 'git://github.com/stefanfreitag/SHT21.git'
+		licenses = ['AGPL-V3']
+		labels = ['Java', 'SHT21', 'Demo']
+		publicDownloadNumbers = true
+		version {
+			name = project.version
+			vcsTag = project.version
+			gpg {
+				sign = true
+				passphrase = project.hasProperty('gpg_passphrase') ? gpg_passphrase : ''
+			}
+		}
 
-    }
+	}
 }
 
 compileJava {
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
 }
 
 jar {
-    mainClassName = "de.freitag.stefan.sht21.SHT21Demo"
-    manifest {
-        attributes 'Implementation-Title': 'SHT21 Core Library', 'Implementation-Version': version
-    }
+	mainClassName = "de.freitag.stefan.sht21.SHT21Demo"
+	manifest {
+		attributes 'Implementation-Title': 'SHT21 Core Library', 'Implementation-Version': version
+	}
 }
 
 
 startScripts {
-    classpath += files('src/dist/bin/')
+	classpath += files('src/dist/bin/')
 
-    doLast {
-        def windowsScriptFile = file getWindowsScript()
-        def unixScriptFile = file getUnixScript()
-        windowsScriptFile.text = windowsScriptFile.text.replace('%APP_HOME%\\lib\\bin', '%APP_HOME%\\bin')
-        unixScriptFile.text = unixScriptFile.text.replace('$APP_HOME/lib/bin', '$APP_HOME/bin')
-    }
+	doLast {
+		def windowsScriptFile = file getWindowsScript()
+		def unixScriptFile = file getUnixScript()
+		windowsScriptFile.text = windowsScriptFile.text.replace('%APP_HOME%\\lib\\bin', '%APP_HOME%\\bin')
+		unixScriptFile.text = unixScriptFile.text.replace('$APP_HOME/lib/bin', '$APP_HOME/bin')
+	}
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+	classifier = 'sources'
+	from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
+	classifier = 'javadoc'
+	from javadoc.destinationDir
 }
 
 artifacts {
-    archives sourcesJar
-    archives javadocJar
+	archives sourcesJar
+	archives javadocJar
 }
 
 jacocoTestReport {
-    reports {
-        xml.enabled = true
-        html.enabled = true
-    }
+	reports {
+		xml.enabled = true
+		html.enabled = true
+	}
 }
 
 javadoc {
-    options.addBooleanOption('html5', true)
+	options.addBooleanOption('html5', true)
 }

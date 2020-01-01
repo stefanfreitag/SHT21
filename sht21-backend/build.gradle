@@ -1,5 +1,6 @@
 plugins {
 	id 'java'
+	id 'jacoco'
 	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
 	id 'org.springframework.boot' version '2.2.2.RELEASE'
 }
@@ -18,28 +19,27 @@ configurations {
 }
 
 ext{
-    jacksonVersion = '2.10.1'
+	jacksonVersion = '2.10.1'
 	swaggerVersion = '2.9.2'
 	openApiVersion = '1.2.17'
-
 }
 dependencies {
 	//Spring Boot
 	implementation('org.springframework.boot:spring-boot-starter-actuator',
-		'org.springframework.boot:spring-boot-starter-data-rest',
-		'org.springframework.data:spring-data-redis')
+			'org.springframework.boot:spring-boot-starter-data-rest',
+			'org.springframework.boot:spring-boot-starter-data-mongodb')
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testCompile 'org.mockito:mockito-core:3.2.4'
 
-	implementation 'org.modelmapper:modelmapper:0.7.5'
+	implementation 'org.modelmapper:modelmapper:2.3.5'
 	implementation('org.springdoc:springdoc-openapi-ui:' + openApiVersion)
 	implementation('io.vavr:vavr:0.10.2')
 
-    //Database
-	implementation('redis.clients:jedis:3.1.0')
-
+	//Database
+	implementation('org.influxdb:influxdb-java:2.17')
 	//Other
 	implementation( 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:' + jacksonVersion,
-	'com.fasterxml.jackson.core:jackson-core:' + jacksonVersion)
+			'com.fasterxml.jackson.core:jackson-core:' + jacksonVersion)
 
 }
 
@@ -52,6 +52,7 @@ javadoc {
 	options.addBooleanOption('html5', true)
 }
 
+compileJava.dependsOn 'spotlessApply'
 spotless{
 	java {
 		target project.fileTree(project.rootDir) {
@@ -60,5 +61,23 @@ spotless{
 		}
 		googleJavaFormat()
 		removeUnusedImports()
+	}
+	groovy {
+		greclipse()
+		target project.fileTree(project.rootDir) {
+			include '**/build.gradle'
+		}
+	}
+}
+
+jacoco {
+	toolVersion = "0.8.5"
+}
+
+jacocoTestReport {
+	reports {
+		xml.enabled false
+		csv.enabled false
+		html.destination file("${buildDir}/jacocoHtml")
 	}
 }

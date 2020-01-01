@@ -69,7 +69,8 @@ public class SensorApiControllerTest {
 
   @Test
   public void createSensorWithAlreadyExistingUuidThrowsConflict() throws Exception {
-    when(sensorService.exists("e16f9f6c-eb43-4ef7-b7be-48a3653028c9")).thenReturn(true);
+    when(sensorService.exists(UUID.fromString("e16f9f6c-eb43-4ef7-b7be-48a3653028c9")))
+        .thenReturn(true);
 
     mockMvc
         .perform(

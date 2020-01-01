@@ -1,50 +1,119 @@
 package de.freitag.stefan.spring.sht21.server.service;
 
-import de.freitag.stefan.spring.sht21.server.api.model.MeasurementDTO;
 import de.freitag.stefan.spring.sht21.server.api.model.SensorDTO;
+import de.freitag.stefan.spring.sht21.server.domain.model.Measurement;
 import de.freitag.stefan.spring.sht21.server.domain.model.Sensor;
+import de.freitag.stefan.spring.sht21.server.domain.repositories.SensorRepository;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+import lombok.NonNull;
+import lombok.extern.log4j.Log4j2;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
-public interface SensorService {
+@Log4j2
+@Service
+public class SensorService {
 
-  List<Sensor> readAll();
+  /** Stores basic information about sensors. */
+  private final SensorRepository repository;
 
-  Optional<Sensor> readByUuid(String uuid);
+  /** Used to store measurements related to the sensors. */
+  private InfluxService influxService;
 
-  /**
-   * Create a new sensorDTO.
-   *
-   * @param sensorDTO The SensorDTO DTO.
-   * @return
-   */
-  SensorDTO create(SensorDTO sensorDTO);
+  private final ModelMapper modelMapper;
 
-  /**
-   * Update the information for an existing sensor.
-   *
-   * @param uuid
-   * @param name
-   * @param description
-   * @return
-   */
-  SensorDTO update(String uuid, String name, String description);
+  @Autowired
+  public SensorService(
+      @NonNull final InfluxService influxService,
+      @NonNull final SensorRepository repository,
+      @NonNull final ModelMapper modelMapper) {
+    this.repository = repository;
+    this.modelMapper = modelMapper;
+    this.influxService = influxService;
+  }
 
-  boolean exists(String uuid);
+  public List<Sensor> readAll() {
+    return StreamSupport.stream(this.repository.findAll().spliterator(), false)
+        .collect(Collectors.toList());
+  }
 
-  List<MeasurementDTO> getMeasurements(String uuid);
+  public Sensor create(@NonNull final Sensor sensor) {
+    Optional<Sensor> result = this.repository.findByUuid(sensor.getUuid());
+    if (!result.isPresent()) {
+      Stream.of(sensor).forEach(repository::save);
+      return sensor;
+    }
+    return null;
+  }
 
-  List<MeasurementDTO> getMeasurements(String uuid, Long from, Long to);
+  public SensorDTO update(final String uuid, final String name, final String description) {
+    Optional<Sensor> sensor = this.repository.findByUuid(uuid);
+    sensor.get().setName(name);
+    sensor.get().setDescription(description);
+    // TODO
+    // Sensor save = this.repository.save(sensor);
+    //        return this.convertToDto(sensor.get());
+    return null;
+  }
 
-  MeasurementDTO addMeasurement(String uuid, MeasurementDTO measurementDTO);
+  public Optional<Sensor> readByUuid(@NonNull final String uuid) {
+    log.info("Finding sensor with uuid " + uuid);
+    return this.repository.findByUuid(uuid);
+  }
 
-  /**
-   * Delete an existing sensor by specifying its unique identifier.
-   *
-   * @param uuid The unique identifier of the sensor to delete.
-   * @return
-   * @throws UuidNotFoundException if the uuid to delete could not be found.
-   */
-  ResponseEntity<Void> delete(String uuid) throws UuidNotFoundException;
+  public boolean exists(@NonNull final UUID uuid) {
+    return this.repository.findByUuid(uuid.toString()).isPresent();
+  }
+
+  public List<Measurement> getMeasurements(final String uuid) {
+    return this.influxService.getMeasurements(uuid);
+  }
+
+  public List<Measurement> getMeasurements(
+      @NonNull final String uuid, final Instant from, final Instant to) {
+
+    log.info("Getting measurements for sensor with uuid " + uuid + " from " + from + " to " + to);
+    return this.influxService.getMeasurements(uuid, from, to);
+  }
+
+  public Measurement addMeasurement(
+      @NonNull final String uuid, @NonNull final Measurement measurement) {
+
+    // Optional<Sensor> byUuid = this.repository.findByUuid(uuid);
+    // entity.setSensor(byUuid.get());
+    // TODO
+    log.info("Writing new measurement for sensor " + uuid + ": " + measurement);
+    influxService.writeMeasurement(uuid, measurement);
+    //     this.measurementRepository.save(entity);
+    // byUuid.add(entity);
+    // this.repository.save(byUuid.get());
+    //  measurementRepository.save(entity);
+    return measurement;
+  }
+
+  public ResponseEntity<Void> delete(final String uuid) throws UuidNotFoundException {
+    Optional<Sensor> sensor = this.repository.findByUuid(uuid);
+    if (sensor == null) {
+      throw new UuidNotFoundException("Could not find sensor with uuid " + uuid);
+    }
+
+    this.repository.delete(sensor.get());
+    log.info("Deleted sensor with uuid " + uuid);
+    return null;
+  }
+
+  private de.freitag.stefan.spring.sht21.server.domain.model.Sensor convertToEntity(
+      SensorDTO postDto) {
+    de.freitag.stefan.spring.sht21.server.domain.model.Sensor post =
+        modelMapper.map(postDto, de.freitag.stefan.spring.sht21.server.domain.model.Sensor.class);
+    return post;
+  }
 }
