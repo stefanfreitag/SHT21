@@ -1,6 +1,7 @@
 package de.freitag.stefan.spring.sht21.server.api.model;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.freitag.stefan.spring.sht21.server.domain.model.Measurement;
 import java.time.Instant;

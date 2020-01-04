@@ -4,7 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import de.freitag.stefan.spring.sht21.server.domain.model.Sensor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @NoArgsConstructor
 @AllArgsConstructor
