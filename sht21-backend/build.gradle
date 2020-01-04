@@ -59,7 +59,7 @@ spotless{
 			include '**/*.java'
 			exclude '**/generated/**'
 		}
-		googleJavaFormat()
+		googleJavaFormat("1.7")
 		removeUnusedImports()
 	}
 	groovy {
