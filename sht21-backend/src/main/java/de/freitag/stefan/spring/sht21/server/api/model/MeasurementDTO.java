@@ -3,7 +3,14 @@ package de.freitag.stefan.spring.sht21.server.api.model;
 import de.freitag.stefan.spring.sht21.server.domain.model.Measurement;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor

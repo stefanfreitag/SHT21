@@ -3,7 +3,7 @@ package de.freitag.stefan.spring.sht21.server.api.model;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class Sensors {
+public class SensorUtils {
 
   public static boolean isValidUuid(final String text) {
     if (text == null) {

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 class MeasurementConverterTest {
 
-  MeasurementConverter converter = new MeasurementConverter();
+  private MeasurementConverter converter = new MeasurementConverter();
 
   @Test
   void convert() {

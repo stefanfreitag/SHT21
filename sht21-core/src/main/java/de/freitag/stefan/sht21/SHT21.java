@@ -1,6 +1,11 @@
 package de.freitag.stefan.sht21;
 
-import de.freitag.stefan.sht21.model.*;
+import de.freitag.stefan.sht21.model.EndOfBatteryAlert;
+import de.freitag.stefan.sht21.model.HeaterStatus;
+import de.freitag.stefan.sht21.model.MeasureType;
+import de.freitag.stefan.sht21.model.Measurement;
+import de.freitag.stefan.sht21.model.Resolution;
+import de.freitag.stefan.sht21.model.UnsupportedMeasureTypeException;
 
 public interface SHT21 {
 
