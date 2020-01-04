@@ -1,6 +1,7 @@
 # SHT21
 
 [![Build Status](https://travis-ci.org/stefanfreitag/sht21.svg?branch=master)](https://travis-ci.org/stefanfreitag/sht21)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/d657bc582fed4029b9aa785bd19256fe)](https://www.codacy.com/manual/stefan_20/sht21?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=stefanfreitag/sht21&amp;utm_campaign=Badge_Grade)
 [![Coverage Status](https://coveralls.io/repos/stefanfreitag/sht21/badge.svg)](https://coveralls.io/r/stefanfreitag/sht21)
 [![Download](https://api.bintray.com/packages/stefanfreitag/maven/SHT21/images/download.svg)](https://bintray.com/stefanfreitag/maven/SHT21/_latestVersion)
 
