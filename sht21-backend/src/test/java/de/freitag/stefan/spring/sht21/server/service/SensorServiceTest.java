@@ -32,7 +32,7 @@ class SensorServiceTest {
   @InjectMocks private SensorService service;
 
   @Before
-  public void setup() {
+  public void setUp() {
     MockitoAnnotations.initMocks(this);
   }
 

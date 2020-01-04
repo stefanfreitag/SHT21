@@ -28,7 +28,7 @@ public class InfluxService {
     this.createDataBase();
   }
 
-  void createDataBase() {
+  private void createDataBase() {
     influxDB.query(new Query("CREATE DATABASE " + dbName));
 
     influxDB.setDatabase(dbName);
@@ -43,7 +43,7 @@ public class InfluxService {
     influxDB.setRetentionPolicy(rpName);
   }
 
-  void writeMeasurement(@NonNull final String uuid, @NonNull final Measurement measurement) {
+  public void writeMeasurement(@NonNull final String uuid, @NonNull final Measurement measurement) {
 
     influxDB.write(
         Point.measurement(measurementName)
@@ -55,7 +55,7 @@ public class InfluxService {
             .build());
   }
 
-  List<Measurement> getMeasurements(@NonNull final String uuid) {
+  public List<Measurement> getMeasurements(@NonNull final String uuid) {
     final QueryResult queryResult =
         influxDB.query(
             new Query("Select * from " + measurementName + " where uuid='" + uuid + "';", dbName));
@@ -65,7 +65,7 @@ public class InfluxService {
     return measurements;
   }
 
-  List<Measurement> getMeasurements(@NonNull final String uuid, Instant from, Instant to) {
+  public List<Measurement> getMeasurements(@NonNull final String uuid, Instant from, Instant to) {
     // TODO: Add uuid to query
     QueryResult queryResult =
         influxDB.query(

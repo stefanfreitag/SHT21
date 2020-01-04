@@ -1,6 +1,14 @@
 package de.freitag.stefan.spring.sht21.server.api;
 
-import de.freitag.stefan.spring.sht21.server.api.model.*;
+import de.freitag.stefan.spring.sht21.server.api.model.ApiException;
+import de.freitag.stefan.spring.sht21.server.api.model.InvalidUuidException;
+import de.freitag.stefan.spring.sht21.server.api.model.MeasurementConverter;
+import de.freitag.stefan.spring.sht21.server.api.model.MeasurementDTO;
+import de.freitag.stefan.spring.sht21.server.api.model.MeasurementDTOConverter;
+import de.freitag.stefan.spring.sht21.server.api.model.SensorDTO;
+import de.freitag.stefan.spring.sht21.server.api.model.SensorNotFoundException;
+import de.freitag.stefan.spring.sht21.server.api.model.SensorUtils;
+import de.freitag.stefan.spring.sht21.server.api.model.SensorUuidAlreadyExistsException;
 import de.freitag.stefan.spring.sht21.server.domain.model.Measurement;
 import de.freitag.stefan.spring.sht21.server.domain.model.Sensor;
 import de.freitag.stefan.spring.sht21.server.service.SensorService;
@@ -107,7 +115,7 @@ public class SensorsApiController {
       @PathVariable("id") String id,
       @RequestParam(value = "from", required = false) Long from,
       @RequestParam(value = "to", required = false) Long to) {
-    if (!Sensors.isValidUuid(id)) {
+    if (!SensorUtils.isValidUuid(id)) {
       throw new InvalidUuidException(id);
     }
 
@@ -145,7 +153,7 @@ public class SensorsApiController {
       consumes = {MediaType.APPLICATION_JSON_VALUE},
       method = RequestMethod.POST)
   public SensorDTO createSensor(@Valid @RequestBody SensorDTO body) {
-    if (!Sensors.isValidUuid(body.getUuid())) {
+    if (!SensorUtils.isValidUuid(body.getUuid())) {
       throw new InvalidUuidException(body.getUuid());
     }
     if (this.service.exists(UUID.fromString(body.getUuid()))) {
@@ -228,19 +236,15 @@ public class SensorsApiController {
     return modelMapper.map(measurement, SensorDTO.class);
   }
 
-  private MeasurementDTO convertToDto(
-      @NonNull final de.freitag.stefan.spring.sht21.server.domain.model.Measurement measurement) {
+  private MeasurementDTO convertToDto(@NonNull final Measurement measurement) {
     return modelMapper.map(measurement, MeasurementDTO.class);
   }
 
-  private de.freitag.stefan.spring.sht21.server.domain.model.Measurement convertToEntity(
-      @NonNull final MeasurementDTO measurementDTO) {
-    return modelMapper.map(
-        measurementDTO, de.freitag.stefan.spring.sht21.server.domain.model.Measurement.class);
+  private Measurement convertToEntity(@NonNull final MeasurementDTO measurementDTO) {
+    return modelMapper.map(measurementDTO, Measurement.class);
   }
 
-  private List<MeasurementDTO> convertToDto(
-      List<de.freitag.stefan.spring.sht21.server.domain.model.Measurement> post) {
+  private List<MeasurementDTO> convertToDto(List<Measurement> post) {
     java.lang.reflect.Type targetListType = new TypeToken<List<MeasurementDTO>>() {}.getType();
     return modelMapper.map(post, targetListType);
   }

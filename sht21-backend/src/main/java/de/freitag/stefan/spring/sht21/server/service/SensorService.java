@@ -101,19 +101,12 @@ public class SensorService {
 
   public ResponseEntity<Void> delete(final String uuid) throws UuidNotFoundException {
     Optional<Sensor> sensor = this.repository.findByUuid(uuid);
-    if (sensor == null) {
+    if (!sensor.isPresent()) {
       throw new UuidNotFoundException("Could not find sensor with uuid " + uuid);
     }
 
     this.repository.delete(sensor.get());
     log.info("Deleted sensor with uuid " + uuid);
     return null;
-  }
-
-  private de.freitag.stefan.spring.sht21.server.domain.model.Sensor convertToEntity(
-      SensorDTO postDto) {
-    de.freitag.stefan.spring.sht21.server.domain.model.Sensor post =
-        modelMapper.map(postDto, de.freitag.stefan.spring.sht21.server.domain.model.Sensor.class);
-    return post;
   }
 }

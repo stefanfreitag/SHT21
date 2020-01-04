@@ -34,7 +34,7 @@ public class SensorApiControllerTest {
   @InjectMocks private SensorsApiController controller;
 
   @Before
-  public void setup() {
+  public void setUp() {
     MockitoAnnotations.initMocks(this);
     mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
   }

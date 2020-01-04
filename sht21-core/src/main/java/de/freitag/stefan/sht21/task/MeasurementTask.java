@@ -7,7 +7,11 @@ import de.freitag.stefan.sht21.model.UnsupportedMeasureTypeException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
-import lombok.*;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.ToString;
+import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 
 /**
