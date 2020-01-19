@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SensorRepository extends MongoRepository<Sensor, String> {
   Optional<Sensor> findByUuid(@NonNull final String uuid);
+
+  boolean existsByUuid(@NonNull final String uuid);
 }
