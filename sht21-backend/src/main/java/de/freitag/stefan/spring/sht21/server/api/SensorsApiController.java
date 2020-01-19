@@ -187,9 +187,10 @@ public class SensorsApiController {
   @RequestMapping(
       value = "/sensors/{id}",
       produces = {MediaType.APPLICATION_JSON_VALUE},
+      consumes = {MediaType.APPLICATION_JSON_VALUE},
       method = RequestMethod.PUT)
   public SensorDTO updateSensorByUuid(
-      @PathVariable(name = "id") final String uuid, @RequestBody SensorDTO body) {
+      @PathVariable(name = "id") final String uuid, @Valid @RequestBody SensorDTO body) {
 
     if (!uuid.equalsIgnoreCase(body.getUuid())) {
       throw new ApiException(
@@ -199,15 +200,10 @@ public class SensorsApiController {
               + body.getUuid());
     }
 
-    if (body.getName() == null) {
-      throw new ApiException("Update sensorDTO with null name is not allowed.");
-    }
-
-    Sensor sensorDTO = this.service.readByUuid(uuid).get();
-    if (sensorDTO != null) {
+    boolean exists = this.service.exists(UUID.fromString(uuid));
+    if (exists) {
       return this.service.update(uuid, body.getName(), body.getDescription());
     }
-
     throw new SensorNotFoundException(uuid);
   }
 

@@ -5,14 +5,12 @@ import de.freitag.stefan.spring.sht21.server.domain.model.Measurement;
 import de.freitag.stefan.spring.sht21.server.domain.model.Sensor;
 import de.freitag.stefan.spring.sht21.server.domain.repositories.SensorRepository;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,21 +25,15 @@ public class SensorService {
   /** Used to store measurements related to the sensors. */
   private InfluxService influxService;
 
-  private final ModelMapper modelMapper;
-
   @Autowired
   public SensorService(
-      @NonNull final InfluxService influxService,
-      @NonNull final SensorRepository repository,
-      @NonNull final ModelMapper modelMapper) {
+      @NonNull final InfluxService influxService, @NonNull final SensorRepository repository) {
     this.repository = repository;
-    this.modelMapper = modelMapper;
     this.influxService = influxService;
   }
 
   public List<Sensor> readAll() {
-    return StreamSupport.stream(this.repository.findAll().spliterator(), false)
-        .collect(Collectors.toList());
+    return new ArrayList<>(this.repository.findAll());
   }
 
   public Sensor create(@NonNull final Sensor sensor) {
@@ -50,6 +42,7 @@ public class SensorService {
       return result.get();
     } else {
       this.repository.save(sensor);
+      log.info(String.format("Sensor %s has been created.", sensor.getName()));
       return sensor;
     }
   }
@@ -70,7 +63,7 @@ public class SensorService {
   }
 
   public boolean exists(@NonNull final UUID uuid) {
-    return this.repository.findByUuid(uuid.toString()).isPresent();
+    return this.repository.existsByUuid(uuid.toString());
   }
 
   public List<Measurement> getMeasurements(final String uuid) {

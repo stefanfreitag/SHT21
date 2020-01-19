@@ -59,20 +59,23 @@ public class InfluxService {
     final QueryResult queryResult =
         influxDB.query(
             new Query("Select * from " + measurementName + " where uuid='" + uuid + "';", dbName));
-    System.out.println(queryResult);
-    List<Measurement> measurements = resultMapper.toPOJO(queryResult, Measurement.class);
-    System.out.println("Mapped " + measurements.size());
-    return measurements;
+    return resultMapper.toPOJO(queryResult, Measurement.class);
   }
 
-  public List<Measurement> getMeasurements(@NonNull final String uuid, Instant from, Instant to) {
+  public List<Measurement> getMeasurements(
+      @NonNull final String uuid, final Instant from, final Instant to) {
+    Query query =
+        new Query(
+            "Select * from "
+                + measurementName
+                + " where time >="
+                + from.toEpochMilli()
+                + "ms AND time <="
+                + to.toEpochMilli()
+                + "ms",
+            dbName);
     // TODO: Add uuid to query
-    QueryResult queryResult =
-        influxDB.query(
-            new Query(
-                "Select * from " + measurementName + " where time >" + from + " and time <" + to,
-                dbName));
-    List<QueryResult.Result> results = queryResult.getResults();
+    QueryResult queryResult = influxDB.query(query);
     return resultMapper.toPOJO(queryResult, Measurement.class);
   }
 }

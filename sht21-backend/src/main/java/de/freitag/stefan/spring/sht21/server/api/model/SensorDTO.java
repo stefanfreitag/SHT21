@@ -3,6 +3,7 @@ package de.freitag.stefan.spring.sht21.server.api.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.freitag.stefan.spring.sht21.server.domain.model.Sensor;
 import io.swagger.v3.oas.annotations.media.Schema;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,7 @@ public class SensorDTO {
   private String uuid;
 
   @Schema(description = "Name of the sensor.", example = "Sensor SHT21")
+  @NotEmpty
   @JsonProperty("name")
   private String name;
 
@@ -32,7 +34,7 @@ public class SensorDTO {
   @JsonProperty("description")
   private String description;
 
-  public static SensorDTO from(@NonNull Sensor sensor) {
+  public static SensorDTO from(@NonNull final Sensor sensor) {
     return SensorDTO.builder()
         .uuid(sensor.getUuid())
         .name(sensor.getName())
