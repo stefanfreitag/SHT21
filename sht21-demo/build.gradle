@@ -7,8 +7,9 @@ plugins {
 version = '1.0.4'
 
 dependencies {
-	compile project(':sht21-core')
-	compile 'args4j:args4j:2.33'
+	implementation project(':sht21-core')
+	implementation 'com.pi4j:pi4j-core:1.1'
+	implementation 'args4j:args4j:2.33'
 }
 
 def pomConfig = {
@@ -105,7 +106,7 @@ compileJava {
 jar {
 	mainClassName = "de.freitag.stefan.sht21.SHT21Demo"
 	manifest {
-		attributes 'Implementation-Title': 'SHT21 Core Library', 'Implementation-Version': version
+		attributes 'Implementation-Title': 'SHT21 Core Library', 'Implementation-Version': archiveVersion
 	}
 }
 

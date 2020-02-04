@@ -7,12 +7,13 @@ plugins {
 version = '1.0.5-SNAPSHOT'
 
 dependencies {
-	compile project(':sht21-core')
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.0'
-	compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.0')
+	implementation project(':sht21-core')
+	implementation 'com.pi4j:pi4j-core:1.1'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.0'
+	implementation('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.0')
 
-	compile 'com.mashape.unirest:unirest-java:1.4.9'
-	testCompile 'junit:junit:4.12'
+	implementation 'com.mashape.unirest:unirest-java:1.4.9'
+	testImplementation 'junit:junit:4.12'
 }
 
 def pomConfig = {
@@ -109,7 +110,7 @@ compileJava {
 jar {
 	mainClassName = "de.freitag.stefan.sht21.SHT21Demo"
 	manifest {
-		attributes 'Implementation-Title': 'SHT21 Core Library', 'Implementation-Version': version
+		attributes 'Implementation-Title': 'SHT21 Core Library', 'Implementation-Version': archiveVersion
 	}
 }
 
@@ -146,4 +147,8 @@ jacocoTestReport {
 		xml.enabled = true
 		html.enabled = true
 	}
+}
+
+javadoc{
+	options.addBooleanOption('html5', true)
 }
