@@ -7,10 +7,17 @@ management:
   endpoint:
     health:
       enabled: true
+      show-details: always
     env:
       enabled: true
     info:
       enabled: true
+    metrics:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: env, health, info, metrics
 ---
 
 spring:
